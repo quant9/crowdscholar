@@ -1,11 +1,13 @@
 # User role
 ADMIN = 0
-STAFF = 1
-USER = 2
-ROLE = {
+STUDENT = 1
+DONOR = 2
+OTHERUSER = 3
+USERTYPE = {
     ADMIN: 'admin',
-    STAFF: 'staff',
-    USER: 'user',
+    STUDENT: 'student',
+    DONOR: 'donor',
+    OTHERUSER: 'other',
 }
 
 # user status
