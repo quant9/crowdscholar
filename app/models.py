@@ -1,42 +1,40 @@
 from app import db
-
-from flask.ext.login import login_required, current_user
-from flask.ext.sqlalchemy import SQLAlchemy
+from app import constants
 
 # base models for other tables to inherit
 class Base(db.Model):
     __abstract__ = True
-    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
-
-# Define a User model
-class User(Base):
-    __tablename__ = 'auth_user'
-
-    name = db.Column(db.String(128), nullable=False)
+    first_name = db.Column(db.String(128), nullable=False)
+    last_name = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
     password = db.Column(db.String(192), nullable=False)
+    role = db.Column(db.SmallInteger, default=constants.USER)
+    status = db.Column(db.SmallInteger, default=constants.NEW)
 
-    # Authorisation Data: role & status
-    role = db.Column(db.SmallInteger, nullable=False)
-    status = db.Column(db.SmallInteger, nullable=False)
-
-    # New instance instantiation procedure
-    def __init__(self, name, email, password):
-        self.name  = name
+    def __init__(self, first_name, last_name, email, password):
+        self.first_name  = first_name
+        self.last_name  = last_name
         self.email = email
         self.password = password
+
+    def getStatus(self):
+      return constants.STATUS[self.status]
+
+    def getRole(self):
+      return constants.ROLE[self.role]
 
     def __repr__(self):
         return '<User %r>' % (self.name)
 
-class TBLUser(db.Model):
-    __tablename__ = 'tbl_user'
-    user_id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(45))
-    last_name = db.Column(db.String(45))
-    email = db.Column(db.String(45), unique=True)
-    password = db.Column(db.String(45))
+# Define a Student model
+class Student(Base):
+    __tablename__ = 'students'
 
+
+# Define a Student model
+class Donor(Base):
+    __tablename__ = 'donors'

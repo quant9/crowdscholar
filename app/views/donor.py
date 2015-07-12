@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, g
+from flask.ext.login import login_required
 from ..models import Donor
 
 donor_profile = Blueprint('donor_profile', __name__,
@@ -6,24 +7,28 @@ donor_profile = Blueprint('donor_profile', __name__,
                     static_folder='static')
 
 
+@donor_profile.route('/<donor_id>')
+@donor_profile.route('/<donor_id>/profile')
+@login_required
+def profile(donor_id):
+    return render_template('donor/profile.html')
+
+
 @donor_profile.route('/<donor_id>/create')
-def create(user_url_slug):
+@login_required
+def create(donor_id):
     return render_template('donor/create.html')
 
 
 @donor_profile.route('/<donor_id>/donate')
-def donate(user_url_slug):
+@login_required
+def donate(donor_id):
     return render_template('donor/donate.html')
 
 
-@donor_profile.route('/<donor_id>')
-@donor_profile.route('/<donor_id>/profile')
-def profile(user_url_slug):
-    return render_template('donor/profile.html')
-
-
 @donor_profile.route('/<donor_id>/update')
-def update(user_url_slug):
+@login_required
+def update(donor_id):
     return render_template('donor/update.html')
 
 

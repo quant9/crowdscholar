@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, g
+from flask.ext.login import login_required
 from ..models import Student
 
 student_profile = Blueprint('student_profile', __name__,
@@ -6,18 +7,28 @@ student_profile = Blueprint('student_profile', __name__,
                     static_folder='static')
 
 
+@student_profile.route('/')
 @student_profile.route('/<student_id>')
-def profile(user_url_slug):
+@login_required
+def profile(student_id):
     return render_template('student/profile.html')
 
 
-@student_profile.route('/<student_id>/applications')
-def applications(user_url_slug):
-    return render_template('student/applications.html')
+@student_profile.route('/<student_id>/apply')
+@login_required
+def apply(student_id):
+    return render_template('student/apply.html')
+
+
+@student_profile.route('/<student_id>/create')
+@login_required
+def create(student_id):
+    return render_template('student/create.html')
 
 
 @student_profile.route('/<student_id>/update')
-def update(user_url_slug):
+@login_required
+def update(student_id):
     return render_template('student/update.html')
 
 

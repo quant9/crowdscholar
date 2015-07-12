@@ -4,7 +4,9 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from .views.student import student_profile
 from .views.donor import donor_profile
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_object('config')
+app.config.from_pyfile('config.py')
 
 # app.register_blueprint(site, subdomain='<site_subdomain>')
 # http://stackoverflow.com/questions/7512698/flask-subdomain-routing
