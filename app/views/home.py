@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, g, \
                   flash, session, redirect, url_for
-from flask.ext.login import login_required
+# from flask.ext.login import login_required
 
 # Import password / encryption helper tools
 from werkzeug import check_password_hash, generate_password_hash
