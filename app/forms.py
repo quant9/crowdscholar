@@ -28,7 +28,7 @@ class LoginForm(Form):
 class ChangePasswordForm(Form):
     password = PasswordField('New Password', [
                 InputRequired(message=message),
-                EqualTo('confirm', mesage='Passwords must match')])
+                EqualTo('confirm', message='Passwords must match')])
     confirm = PasswordField('Repeat Password', [InputRequired(message=message)])
 
 

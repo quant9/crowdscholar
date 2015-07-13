@@ -29,14 +29,11 @@
       <h3 class="text-muted">Crowdscholar</h3>
       {% endblock %}
     </div>
-    <div id="messages-wrap">
-      <div id="messages">
-        {% for category, msg in get_flashed_messages(with_categories=true) %}
-          <p class="message flash-{{ category }}">{{ msg }}</p>
-        {% endfor %}
-      </div>
-    </div>
     <div id="content">{% block content %}{% endblock %}</div>
-    <div id="footer">{% block footer %}{% endblock %}</div>
+    <div id="footer">{% block footer %}
+      <p>&copy; 2015 Crowdscholar. All rights reserved.</p>
+      {% endblock %}
+    </div>
   </body>
 </html>
+
