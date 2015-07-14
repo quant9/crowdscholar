@@ -2,7 +2,7 @@
 {% block content %}
   {% from "macros.html" import render_field %}
   <h1>Sign In</h1>
-  <form method="POST" action="." class="form">
+  <form method="POST" action="/login" class="form">
     {{ form.hidden_tag() }}
     {{ render_field(form.user_type, class="radio button") }}
     {{ render_field(form.email, class="input text") }}

@@ -41,7 +41,7 @@ def login():
             user = Donor.query.filter_by(email=form.email.data).first()
             user_id = 'donor_id'
         if user and check_password_hash(user.password, form.password.data):
-            session[user_id] = user.id
+            session[user_id] = user.user_id
             flash('Welcome %s' % user.first_name)
             return redirect(url_for('home.index'))
 
@@ -63,7 +63,7 @@ def register():
 
         db.session.add(user)
         db.session.commit()
-        session[user_id] = user.id
+        session[user_id] = user.user_id
         flash('Thanks for registering')
         return redirect(url_for('home.index'))
     return render_template("home/register.html", form=form)

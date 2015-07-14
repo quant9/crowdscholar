@@ -8,7 +8,7 @@ message = 'Field is required.'
 
 class RegisterForm(Form):
     user_type = RadioField('Student or Donor?', [InputRequired(message=message)],
-        choices=[(1, 'Student'), (2, 'Donor')], default=1)
+        choices=[(1, 'Student'), (2, 'Donor')], default=1, coerce=int)
     first_name = TextField('First Name', [InputRequired(message=message)])
     last_name = TextField('Last Name', [InputRequired(message=message)])    
     email = TextField('Email Address', [InputRequired(message=message), Email()])
@@ -21,7 +21,7 @@ class RegisterForm(Form):
 
 class LoginForm(Form):
     user_type = RadioField('User Type', [InputRequired(message=message)],
-        choices=[(1, 'Student'), (2, 'Donor')], default=1)
+        choices=[(1, 'Student'), (2, 'Donor')], default=1, coerce=int)
     email = TextField('Email Address', [InputRequired(message=message), Email()])
     password = PasswordField('Password', [InputRequired(message=message)])
 
