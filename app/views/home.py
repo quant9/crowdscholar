@@ -1,18 +1,34 @@
 from flask import Blueprint, request, render_template, g, \
                   flash, session, redirect, url_for
-# from flask.ext.login import login_required
+from flask.ext.login import login_user, logout_user, current_user
+from functools import wraps
 
 # Import password / encryption helper tools
 from werkzeug import check_password_hash, generate_password_hash
 
-from app import db
+from app import db, login_manager
 from app.forms import LoginForm, RegisterForm
-from app.models import Student, Donor
-
+from app.models import User, Student, Donor
 
 home = Blueprint('home', __name__, 
     template_folder='templates/home', static_folder='static')
 
+# custom login_required function to support different user_types
+def login_required(user_type='any'):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated():
+                return login_manager.unauthorized()
+            elif (current_user.user_type != user_type) and (user_type != 'any'):
+                return login_manager.unauthorized()
+            return fn(*args, **kwargs)
+        return decorated_view
+    return wrapper
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @home.route('/')
 @home.route('/index')
@@ -31,6 +47,8 @@ def before_request():
 # Set the route and accepted methods
 @home.route('/login', methods=['GET', 'POST'])
 def login():
+    if g.user is not None and g.user.is_authenticated():
+        return redirect(url_for('home.index'))
     # If sign in form is submitted
     form = LoginForm(request.form)
     if form.validate_on_submit():
@@ -42,6 +60,7 @@ def login():
             user_id = 'donor_id'
         if user and check_password_hash(user.password, form.password.data):
             session[user_id] = user.user_id
+            login_user(user, remember=False) # TODO: add remember me
             flash('Welcome %s' % user.first_name)
             return redirect(url_for('home.index'))
 
@@ -53,11 +72,11 @@ def register():
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         if form.user_type.data == 1:
-            user = Student(first_name=form.first_name.data, last_name=form.last_name.data,
+            user = User(first_name=form.first_name.data, last_name=form.last_name.data,
                 email=form.email.data, password=generate_password_hash(form.password.data))
             user_id = 'student_id'
         elif form.user_type.data == 2:
-            user = Donor(first_name=form.first_name.data, last_name=form.last_name.data,
+            user = User(first_name=form.first_name.data, last_name=form.last_name.data,
                 email=form.email.data, password=generate_password_hash(form.password.data))
             user_id = 'donor_id'
 
@@ -70,10 +89,11 @@ def register():
 
 
 @home.route('/logout')
+@login_required('any')
 def logout():
+    logout_user()
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('home.index'))
-
 
 
