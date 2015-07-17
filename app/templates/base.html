@@ -29,9 +29,14 @@
           <ul class="nav nav-pills pull-right">
             <li role="presentation" class="active"><a href="{{ url_for('home.index') }}">Home</a>
             </li>
+            {% if current_user.is_authenticated() %}
+              <li role="presentation">Hi {{ current_user.first_name }}!</li>
+              <li role="presentation"><a href="{{ url_for('home.logout') }}">Log out</a></li>
+            {% else %}
             <li role="presentation"><a href="{{ url_for('home.login') }}">Login</a>
             </li>
             <li role="presentation"><a href="{{ url_for('home.register') }}">Sign Up</a>
+            {% endif %}
             </li>
           </ul>
         </nav>

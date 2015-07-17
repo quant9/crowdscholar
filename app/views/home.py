@@ -9,6 +9,7 @@ from werkzeug import check_password_hash, generate_password_hash
 from app import db, login_manager
 from app.forms import LoginForm, RegisterForm
 from app.models import User, Student, Donor
+from sqlalchemy.exc import IntegrityError
 
 home = Blueprint('home', __name__, 
     template_folder='templates/home', static_folder='static')
@@ -28,63 +29,63 @@ def login_required(user_type='any'):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return User.query.get(user_id)
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash('You are not logged in.')
+    return redirect(url_for('home.index'))
 
 @home.route('/')
 @home.route('/index')
 def index():
     return render_template("home/index.html")
 
-# pull user's profile from the database before every request are treated
-@home.before_request
-def before_request():
-    g.user = None
-    if 'student_id' in session:
-        g.user = Student.query.get(session['student_id'])
-    if 'donor_id' in session:
-        g.user = Student.query.get(session['donor_id'])
-
-# Set the route and accepted methods
 @home.route('/login', methods=['GET', 'POST'])
 def login():
-    if g.user is not None and g.user.is_authenticated():
+    # if already signed in take to homepage
+    if current_user.is_authenticated():
         return redirect(url_for('home.index'))
+
     # If sign in form is submitted
     form = LoginForm(request.form)
     if form.validate_on_submit():
-        if form.user_type.data == 1: # student
-            user = Student.query.filter_by(email=form.email.data).first()
-            user_id = 'student_id'
-        elif form.user_type.data == 2: # donor
-            user = Donor.query.filter_by(email=form.email.data).first()
-            user_id = 'donor_id'
-        if user and check_password_hash(user.password, form.password.data):
-            session[user_id] = user.user_id
-            login_user(user, remember=False) # TODO: add remember me
-            flash('Welcome %s' % user.first_name)
-            return redirect(url_for('home.index'))
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and user.user_type == form.user_type.data:
+            if check_password_hash(user.password, form.password.data):
+                login_user(user, remember=False) # TODO: add remember me
+                flash('Welcome %s' % user.first_name)
+                return redirect(url_for('home.index'))
 
         flash('Wrong email or password', 'error-message')
     return render_template("home/login.html", form=form)
 
 @home.route('/register', methods=['GET', 'POST'])
 def register():
+    # if already signed in take to homepage
+    if current_user.is_authenticated():
+        return redirect(url_for('home.index'))
+
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         if form.user_type.data == 1:
             user = User(first_name=form.first_name.data, last_name=form.last_name.data,
-                email=form.email.data, password=generate_password_hash(form.password.data))
-            user_id = 'student_id'
+                email=form.email.data, password=generate_password_hash(form.password.data),
+                user_type = 1)
         elif form.user_type.data == 2:
             user = User(first_name=form.first_name.data, last_name=form.last_name.data,
-                email=form.email.data, password=generate_password_hash(form.password.data))
-            user_id = 'donor_id'
+                email=form.email.data, password=generate_password_hash(form.password.data),
+                user_type = 2)
 
-        db.session.add(user)
-        db.session.commit()
-        session[user_id] = user.user_id
-        flash('Thanks for registering')
-        return redirect(url_for('home.index'))
+        try:
+            db.session.add(user)
+            db.session.commit()
+            login_user(user, remember=False) # TODO: add remember me
+            flash('Thanks for registering')
+            return redirect(url_for('home.index'))
+        except IntegrityError:
+            flash('An account with this email already exists.')
+
     return render_template("home/register.html", form=form)
 
 

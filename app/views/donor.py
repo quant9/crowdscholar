@@ -7,10 +7,6 @@ from .home import login_required
 donor_profile = Blueprint('donor_profile', __name__, url_prefix='/donor',
     template_folder='templates/donor', static_folder='static')
 
-@login_manager.user_loader
-def load_user(donor_id):
-    return Donor.query.get(int(donor_id))
-
 
 @donor_profile.route('/<donor_id>')
 @donor_profile.route('/<donor_id>/profile')
