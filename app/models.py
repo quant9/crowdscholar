@@ -39,11 +39,11 @@ class User(db.Model, UserMixin):
 # Define a Student model
 class Student(User):
     __tablename__ = 'students'
-    user_type = db.Column(db.SmallInteger, default=constants.STUDENT)
-    status = db.Column(db.SmallInteger, default=constants.NEW)
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 # Define a Student model
 class Donor(User):
     __tablename__ = 'donors'
-    user_type = db.Column(db.SmallInteger, default=constants.DONOR)
-    status = db.Column(db.SmallInteger, default=constants.NEW)
+    id = db.Column(db.Integer, primary_key=True)
+    donor_id = db.Column(db.Integer, db.ForeignKey('users.id'))

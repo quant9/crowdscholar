@@ -11,6 +11,13 @@ app.config.from_pyfile('config.py')
 db = SQLAlchemy(app)
 # db.create_all()
 
+# handle login with flask-login
+login_manager = LoginManager()
+login_manager.login_view = 'views.home'
+login_manager.login_message = u'You must be logged in to access Crowdscholar.'
+login_manager.init_app(app)
+
+# import views
 from .views.home import home
 from .views.student import student_profile
 from .views.donor import donor_profile
@@ -20,12 +27,6 @@ from .views.donor import donor_profile
 app.register_blueprint(home)
 app.register_blueprint(student_profile)
 app.register_blueprint(donor_profile)
-
-# handle login with flask-login
-login_manager = LoginManager()
-login_manager.login_view = 'views.home'
-login_manager.login_message = u'You must be logged in to access Crowdscholar.'
-login_manager.init_app(app)
 
 
 

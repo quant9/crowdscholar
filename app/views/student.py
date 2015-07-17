@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, g
-from flask.ext.login import login_user, logout_user, current_user, login_required
-from ..models import Student
+from flask.ext.login import login_user, logout_user, current_user
 from app import login_manager
+from ..models import Student
+from .home import login_required
 
 
 student_profile = Blueprint('student_profile', __name__, url_prefix='/student',

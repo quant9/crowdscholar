@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, g
 from flask.ext.login import login_user, logout_user, current_user
-from .home import login_required
-from ..models import Donor
 from app import login_manager
+from ..models import Donor
+from .home import login_required
 
 donor_profile = Blueprint('donor_profile', __name__, url_prefix='/donor',
     template_folder='templates/donor', static_folder='static')
