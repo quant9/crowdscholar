@@ -19,14 +19,14 @@ login_manager.init_app(app)
 
 # import views
 from .views.home import home
-from .views.student import student_profile
-from .views.donor import donor_profile
+from .views.student import student
+from .views.donor import donor
 
 # app.register_blueprint(site, subdomain='<site_subdomain>')
 # http://stackoverflow.com/questions/7512698/flask-subdomain-routing
 app.register_blueprint(home)
-app.register_blueprint(student_profile)
-app.register_blueprint(donor_profile)
+app.register_blueprint(student)
+app.register_blueprint(donor)
 
 
 

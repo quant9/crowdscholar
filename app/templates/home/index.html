@@ -11,9 +11,27 @@
   {% endwith %}
   <div class="jumbotron">
     <div class="container">
-      <h1>Welcome to Crowdscholar.</h1>
-      <p class="lead">Crowdscholar connects deserving college-bound students with need- and merit-based scholarships funded by donors from around the world.</p>
-      <p><a class="btn btn-lg btn-success" href="{{ url_for('home.register') }}" role="button">Sign up today</a></p>
+      {% if current_user.is_authenticated() %}
+        {% if current_user.user_type == 1 %}
+          <h2>Welcome to Crowdscholar's student portal!</h2>
+          <p class="lead">What would you like to do?</p>
+          <p>
+            <a class="btn btn-lg btn-success" href="{{ url_for('student.browse') }}" role="button">Browse Crowdscholarships</a>
+            <a class="btn btn-lg" href="{{ url_for('student.update') }}" role="button">Edit your Profile</a>
+          </p>
+        {% elif current_user.user_type == 2 %}
+          <h2>Welcome to Crowdscholar's donor portal!</h2>
+          <p class="lead">What would you like to do?</p>
+          <p>
+            <a class="btn btn-lg btn-success" href="{{ url_for('donor.browse') }}" role="button">View active Crowdscholarships</a>
+            <a class="btn btn-lg" href="{{ url_for('donor.create') }}" role="button">Create a Crowdscholarship</a>
+          </p>
+        {% endif %}
+      {% else %}
+        <h1>Welcome to Crowdscholar.</h1>
+        <p class="lead">Crowdscholar connects deserving college-bound students with need- and merit-based scholarships funded by donors from around the world.</p>
+        <p><a class="btn btn-lg btn-success" href="{{ url_for('home.register') }}" role="button">Sign up today</a></p>
+      {% endif %}
     </div>
   </div>
 

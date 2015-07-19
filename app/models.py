@@ -1,6 +1,7 @@
 from app import db
 from app import constants
 from flask.ext.login import UserMixin
+import datetime
 
 # base models for other tables to inherit
 class User(db.Model, UserMixin):
@@ -36,14 +37,64 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return '<User %r>' % (self.first_name)
 
-# Define a Student model
 class Student(User):
     __tablename__ = 'students'
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     student_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-# Define a Student model
+class Campaign(db.Model):
+    __tablename__ = 'campaigns'
+    campaign_id = db.Column(db.Integer, primary_key=True)
+    creator_id = db.Column(db.Integer, db.ForeignKey('students.student_id'))
+
+
 class Donor(User):
     __tablename__ = 'donors'
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     donor_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+class Scholarship(db.Model):
+    __tablename__ = 'scholarships'
+    scholarship_id = db.Column(db.Integer, primary_key=True)
+    creator_id = db.Column(db.Integer, db.ForeignKey('donors.donor_id'))
+    name = db.Column(db.String(200), nullable=False)
+    slug = db.Column(db.Text, nullable=False)
+    amount_target = db.Column(db.Float, nullable=False)
+    amount_funded = db.Column(db.Float, default=0)
+    status = db.Column(db.Integer, default=constants.FUNDING)
+    description = db.Column(db.Text, nullable=True)
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+    expiration_date = db.Column(db.DateTime,
+        default=datetime.datetime(2099,12,31))
+
+    def __init__(self, creator_id, name, slug, target_amount, 
+        description=None, expiration_date=None):
+        self.creator_id = creator_id
+        self.name = name
+        self.slug = slug
+        self.target_amount = target_amount
+        self.description = description
+        self.expiration_date = expiration_date
+
+class Donation(db.Model):
+    __tablename__ = 'donations'
+    donation_id = db.Column(db.Integer, primary_key=True)
+    donor_id = db.Column(db.Integer, db.ForeignKey('donors.donor_id'))
+    scholarship_id = db.Column(db.Integer, db.ForeignKey('donors.donor_id'))
+    amount = db.Column(db.Float, nullable=False)
+    cleared = db.Column(db.Boolean, default=False)
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def __init__(self, donor_id, scholarship_id, amount, cleared=False):
+        self.donor_id = donor_id
+        self.scholarship_id = scholarship_id
+        self.amount = amount
+        self.cleared = cleared
+
+
+
+
+
+
+
+
