@@ -1,4 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-  <p>I'm working on this right now</p>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="row">
+          <div class="alert alert-info" role="alert">{{message}}</div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  <h1>Browse Scholarships</h1>
+  {% if scholarship %}<p>Viewing scholarship: {{ scholarship.name }}</p>
+    <ul><li>Scholarship ID: {{ scholarship.scholarship_id }}</li>
+      <li>Created by:</li>
+      <li>Expires on: {{ scholarship.expiration_date }}</li>
+      <li>${{ scholarship.amount_funded }} funded out of ${{ scholarship.amount_target }}</li>
+      <li>{{ scholarship.slug }}</li>
+  {% else %}<p>Viewing all scholarships</p>
+  {% endif %}
+
+  <a href="{{ url_for('home.register') }}">Register</a>
 {% endblock %}

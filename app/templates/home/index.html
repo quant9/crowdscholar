@@ -16,15 +16,15 @@
           <h2>Welcome to Crowdscholar's student portal!</h2>
           <p class="lead">What would you like to do?</p>
           <p>
-            <a class="btn btn-lg btn-success" href="{{ url_for('student.browse') }}" role="button">Browse Crowdscholarships</a>
-            <a class="btn btn-lg" href="{{ url_for('student.update') }}" role="button">Edit your Profile</a>
+            <a class="btn btn-lg btn-success" href="{{ url_for('student.browse') }}" role="button">Browse Scholarships</a>
+            <a class="btn btn-lg" href="{{ url_for('student.create') }}" role="button">Create a Campaign</a>
           </p>
         {% elif current_user.user_type == 2 %}
           <h2>Welcome to Crowdscholar's donor portal!</h2>
           <p class="lead">What would you like to do?</p>
           <p>
-            <a class="btn btn-lg btn-success" href="{{ url_for('donor.browse') }}" role="button">View active Crowdscholarships</a>
-            <a class="btn btn-lg" href="{{ url_for('donor.create') }}" role="button">Create a Crowdscholarship</a>
+            <a class="btn btn-lg btn-success" href="{{ url_for('donor.browse') }}" role="button">View active Scholarships</a>
+            <a class="btn btn-lg" href="{{ url_for('donor.create') }}" role="button">Create a Scholarship</a>
           </p>
         {% endif %}
       {% else %}

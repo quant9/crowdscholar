@@ -15,13 +15,13 @@ home = Blueprint('home', __name__,
     template_folder='templates/home', static_folder='static')
 
 # custom login_required function to support different user_types
-def login_required(user_type='any'):
+def login_required(user_type=0):
     def wrapper(fn):
         @wraps(fn)
         def decorated_view(*args, **kwargs):
             if not current_user.is_authenticated():
                 return login_manager.unauthorized()
-            elif (current_user.user_type != user_type) and (user_type != 'any'):
+            elif (current_user.user_type != user_type) and (user_type != 0):
                 return login_manager.unauthorized()
             return fn(*args, **kwargs)
         return decorated_view
@@ -90,10 +90,9 @@ def register():
 
 
 @home.route('/logout')
-@login_required('any')
 def logout():
     logout_user()
-    session.pop('logged_in', None)
+    # session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('home.index'))
 
