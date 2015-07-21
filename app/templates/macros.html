@@ -3,10 +3,10 @@
     {{ field.label(class="label") }}
     {% if field.errors %}
         {% set css_class = 'has_error ' + kwargs.pop('class', '') %}
-        {{ field(class=css_class, **kwargs) }}
-        <ul class="errors">{% for error in field.errors %}<li>{{ error|e }}</li>{% endfor %}</ul>
+        <p>{{ field(class=css_class, **kwargs) }}
+        {% for error in field.errors %}<span class="error">{{ error|e }}{% endfor %}</span></p>
     {% else %}
-        {{ field(**kwargs) }}
+        <p>{{ field(**kwargs) }}</p>
     {% endif %}
     </div>
 {% endmacro %}

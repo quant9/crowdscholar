@@ -12,6 +12,7 @@
     {% block css %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    {% from "macros.html" import get_random %}
     <link rel="stylesheet" href="/static/css/main.css">
     {% endblock %}
     {% block script %}    
@@ -40,8 +41,8 @@
             </li>
           </ul>
         </nav>
-        <h3 class="text-muted"><a href="{{ url_for('home.index') }}">Crowdscholar</a></h3>
         {% endblock %}
+        <h3 class="text-muted"><a href="{{ url_for('home.index') }}">Crowdscholar</a></h3>
       </div>
     </div>
     <div id="content">{% block content %}{% endblock %}</div>
