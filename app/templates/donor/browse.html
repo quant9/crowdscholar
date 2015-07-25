@@ -10,13 +10,17 @@
     {% endif %}
   {% endwith %}
   <h1>Browse Scholarships</h1>
-  {% if scholarship %}<p>Viewing scholarship: {{ scholarship.name }}</p>
+  {% if scholarship %}
+    <p>Viewing scholarship: {{ scholarship.name }}</p>
     <ul><li>Scholarship ID: {{ scholarship.scholarship_id }}</li>
       <li>Created by:</li>
       <li>Expires on: {{ scholarship.expiration_date }}</li>
       <li>${{ scholarship.amount_funded }} funded out of ${{ scholarship.amount_target }}</li>
       <li>{{ scholarship.slug }}</li>
   {% else %}<p>Viewing all scholarships</p>
+    {% for post in site.posts | reverse | list[0:4] %}
+      <li>&raquo; <a href="/{{ post.url }}">{{ post.title }}</a></li>
+    {% endfor %}
   {% endif %}
 
   <a href="{{ url_for('home.register') }}">Register</a>

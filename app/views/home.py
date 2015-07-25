@@ -27,6 +27,7 @@ def login_required(user_type=0):
         return decorated_view
     return wrapper
 
+# necessary for flask login
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)

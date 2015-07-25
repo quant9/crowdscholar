@@ -1,17 +1,17 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, PasswordField, BooleanField, RadioField
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, RadioField
 # from wtforms fmport RecaptchaField
 
-from wtforms.validators import InputRequired, Email, EqualTo
+from wtforms.validators import InputRequired, Email, EqualTo, Length
 
 message = 'Field is required.'
 
 class RegisterForm(Form):
     user_type = RadioField('Student or Donor?', [InputRequired(message=message)],
         choices=[(1, 'Student'), (2, 'Donor')], default=1, coerce=int)
-    first_name = TextField('First Name', [InputRequired(message=message)])
-    last_name = TextField('Last Name', [InputRequired(message=message)])    
-    email = TextField('Email Address', [InputRequired(message=message), Email()])
+    first_name = StringField('First Name', [InputRequired(message=message)])
+    last_name = StringField('Last Name', [InputRequired(message=message)])    
+    email = StringField('Email Address', [InputRequired(message=message), Email()])
     password = PasswordField('Password', [InputRequired(message=message)])
     confirm = PasswordField('Repeat Password', [
         InputRequired(message=message),
@@ -22,7 +22,7 @@ class RegisterForm(Form):
 class LoginForm(Form):
     user_type = RadioField('User Type', [InputRequired(message=message)],
         choices=[(1, 'Student'), (2, 'Donor')], default=1, coerce=int)
-    email = TextField('Email Address', [InputRequired(message=message), Email()])
+    email = StringField('Email Address', [InputRequired(message=message), Email()])
     password = PasswordField('Password', [InputRequired(message=message)])
 
 class ChangePasswordForm(Form):
@@ -51,4 +51,5 @@ class StudentProfileForm(ProfileForm):
     pass
 
 class DonorProfileForm(ProfileForm):
-    pass
+    nickname = StringField('nickname', validators=[InputRequired()])
+    about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])

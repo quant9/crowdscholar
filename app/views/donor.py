@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, g
 from flask.ext.login import login_user, logout_user, current_user
-from app import login_manager
-from app.forms import CreateScholarshipForm, DonationForm
+from app import db, login_manager
+from app.forms import CreateScholarshipForm, DonationForm, DonorProfileForm
 from app.models import Donor, Scholarship, Campaign, Donation
 from .home import login_required
 
@@ -15,18 +15,19 @@ donor = Blueprint('donor', __name__, url_prefix='/donor',
 def browse(scholarship_id=None):
     if scholarship_id:
         scholarship = Scholarship.query.join(Donor).filter(Scholarship.scholarship_id==scholarship_id).first() or None
-        return render_template('donor/browse.html', scholarship=scholarship)
-    # elif campaign_id:
-    #     c = Campaign.query.filter_by(campaign_id=campaign_id).first() or None
-    #     return render_template('donor/browse.html', campaign=c)
-    else:
-        return render_template('donor/browse.html')
+        if scholarship:
+            return render_template('donor/browse.html', scholarship=scholarship)
+    full_list = Scholarship.query.join(Donor).____
+    return render_template('donor/browse.html', full_list=full_list)
 
 
 @donor.route('/profile')
 @donor.route('/<donor_id>')
 @login_required(user_type=2)
-def profile(donor_id):
+def profile(donor_id=None):
+    if donor_id:
+        donor = Donor.query.filter_by(donor_id=donor_id).first()
+        return render_template('profile.html', donor=donor)
     return render_template('profile.html')
 
 
@@ -49,10 +50,21 @@ def donate(scholarship_id):
     return render_template('donate.html', form=form, scholarship_id=scholarship_id)
 
 
-@donor.route('/update')
+@donor.route('/update', methods=['GET', 'POST'])
 @login_required(user_type=2)
-def update(donor_id):
-    return render_template('update.html')
+def update():
+    form = DonorProfileForm()
+    if form.validate_on_submit():
+        donor = Donor.query.get()
+        form.populate_obj(user)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('update'))
+    else:
+        form.nickname.data = g.user.nickname
+        form.about_me.data = g.user.about_me
+    return render_template('update.html', form=form, title="Crowdscholar: update profile")
+
 
 
 # https://exploreflask.com/blueprints.html
