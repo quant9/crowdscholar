@@ -52,6 +52,13 @@ class Donor(User):
     __tablename__ = 'donors'
     donor_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    gender = db.Column(db.SmallInteger)
+    address = db.Column(db.String(300))
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(10))
+    alma_mater = db.Column(db.String(100))
+    profession = db.Column(db.String(100))
+    company = db.Column(db.String(200))
 
 class Scholarship(db.Model):
     __tablename__ = 'scholarships'

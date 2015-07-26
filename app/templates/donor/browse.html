@@ -1,5 +1,9 @@
 {% extends "base.html" %}
+{% block title %}
+  Crowdscholar: browsing scholarship
+{% endblock %}
 {% block content %}
+  <h1>Browse Scholarships</h1>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       {% for message in messages %}
@@ -9,7 +13,6 @@
       {% endfor %}
     {% endif %}
   {% endwith %}
-  <h1>Browse Scholarships</h1>
   {% if scholarship %}
     <p>Viewing scholarship: {{ scholarship.name }}</p>
     <ul><li>Scholarship ID: {{ scholarship.scholarship_id }}</li>
@@ -17,11 +20,18 @@
       <li>Expires on: {{ scholarship.expiration_date }}</li>
       <li>${{ scholarship.amount_funded }} funded out of ${{ scholarship.amount_target }}</li>
       <li>{{ scholarship.slug }}</li>
+      <li><a href="{{ url_for('donor.donate', scholarship_id=scholarship.scholarship_id) }}">Donate to this scholarship</a></li>
+    </ul>
   {% else %}<p>Viewing all scholarships</p>
-    {% for post in site.posts | reverse | list[0:4] %}
-      <li>&raquo; <a href="/{{ post.url }}">{{ post.title }}</a></li>
+    {% for scholarship in full_list %}
+      <ul><li>Scholarship ID: {{ scholarship.scholarship_id }}</li>
+        <li>Created by:</li>
+        <li>Expires on: {{ scholarship.expiration_date }}</li>
+        <li>${{ scholarship.amount_funded }} funded out of ${{ scholarship.amount_target }}</li>
+        <li>{{ scholarship.slug }}</li>
+        <li><a href="{{ url_for('donor.donate', scholarship_id=scholarship.scholarship_id) }}">Donate to this scholarship</a></li>
+      </ul>
     {% endfor %}
   {% endif %}
 
-  <a href="{{ url_for('home.register') }}">Register</a>
 {% endblock %}

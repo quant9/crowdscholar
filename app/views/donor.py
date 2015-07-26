@@ -17,7 +17,7 @@ def browse(scholarship_id=None):
         scholarship = Scholarship.query.join(Donor).filter(Scholarship.scholarship_id==scholarship_id).first() or None
         if scholarship:
             return render_template('donor/browse.html', scholarship=scholarship)
-    full_list = Scholarship.query.join(Donor).____
+    full_list = Scholarship.query.all()
     return render_template('donor/browse.html', full_list=full_list)
 
 
@@ -53,17 +53,15 @@ def donate(scholarship_id):
 @donor.route('/update', methods=['GET', 'POST'])
 @login_required(user_type=2)
 def update():
-    form = DonorProfileForm()
+    donor = Donor.query.filter_by(id=current_user.id).first_or_404()
+    form = DonorProfileForm(request.form)
     if form.validate_on_submit():
-        donor = Donor.query.get()
-        form.populate_obj(user)
+        form.populate_obj(donor)
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('update'))
-    else:
-        form.nickname.data = g.user.nickname
-        form.about_me.data = g.user.about_me
-    return render_template('update.html', form=form, title="Crowdscholar: update profile")
+    flash('Please make sure all fields are filled out correctly.')
+    return render_template('update.html', form=form)
 
 
 

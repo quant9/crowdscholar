@@ -1,5 +1,6 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, TextAreaField, PasswordField, BooleanField, RadioField
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, RadioField, \
+    SelectField
 # from wtforms fmport RecaptchaField
 
 from wtforms.validators import InputRequired, Email, EqualTo, Length
@@ -53,3 +54,36 @@ class StudentProfileForm(ProfileForm):
 class DonorProfileForm(ProfileForm):
     nickname = StringField('nickname', validators=[InputRequired()])
     about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
+    gender = SelectField('Gender', choices=[(1, 'Male'), (2, 'Female'), (3, 'Other')], 
+        coerce=int, [InputRequired(message=message)])
+    address = 
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(10))
+    alma_mater = db.Column(db.String(100))
+    profession = db.Column(db.String(100))
+    company = db.Column(db.String(200))
+
+
+    gender = db.Column(db.SmallInteger)
+    address = db.Column(db.String(300))
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(10))
+    alma_mater = db.Column(db.String(100))
+    profession = db.Column(db.String(100))
+    company = db.Column(db.String(200))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
