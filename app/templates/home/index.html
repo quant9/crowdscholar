@@ -1,14 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <div class="row">
-          <div class="alert alert-info" role="alert">{{message}}</div>
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+  {% from "macros.html" import show_messages %}
+  {{ show_messages() }}
   <div class="jumbotron">
     <div class="container">
       {% if current_user.is_authenticated() %}

@@ -1,9 +1,9 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, RadioField, \
-    SelectField
+    SelectField, IntegerField
 # from wtforms fmport RecaptchaField
 
-from wtforms.validators import InputRequired, Email, EqualTo, Length
+from wtforms.validators import InputRequired, Email, EqualTo, Length, Optional, NumberRange
 
 message = 'Field is required.'
 
@@ -11,7 +11,7 @@ class RegisterForm(Form):
     user_type = RadioField('Student or Donor?', [InputRequired(message=message)],
         choices=[(1, 'Student'), (2, 'Donor')], default=1, coerce=int)
     first_name = StringField('First Name', [InputRequired(message=message)])
-    last_name = StringField('Last Name', [InputRequired(message=message)])    
+    last_name = StringField('Last Name', [InputRequired(message=message)])
     email = StringField('Email Address', [InputRequired(message=message), Email()])
     password = PasswordField('Password', [InputRequired(message=message)])
     confirm = PasswordField('Repeat Password', [
@@ -46,44 +46,20 @@ class CreateScholarshipForm(Form):
     pass
 
 class ProfileForm(Form):
-    pass
+    gender = SelectField('Gender', [InputRequired(message=message)],
+        choices=[(1, 'Male'), (2, 'Female'), (3, 'Other')], coerce=int)
+    address = StringField('Street Address', [Length(max=300)])
+    apt_no = StringField('Apartment # (optional)', [Length(max=5), Optional()])
+    city = StringField('City', [Length(max=100)])
+    state = StringField('Address (number, street, apt #)', [Length(min=2, max=2)])
+    zipcode = IntegerField('Zip Code (5-digit)', [NumberRange(min=10000, max=99999)])
 
 class StudentProfileForm(ProfileForm):
     pass
 
 class DonorProfileForm(ProfileForm):
-    nickname = StringField('nickname', validators=[InputRequired()])
-    about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
-    gender = SelectField('Gender', choices=[(1, 'Male'), (2, 'Female'), (3, 'Other')], 
-        coerce=int, [InputRequired(message=message)])
-    address = 
-    city = db.Column(db.String(100))
-    state = db.Column(db.String(10))
-    alma_mater = db.Column(db.String(100))
-    profession = db.Column(db.String(100))
-    company = db.Column(db.String(200))
-
-
-    gender = db.Column(db.SmallInteger)
-    address = db.Column(db.String(300))
-    city = db.Column(db.String(100))
-    state = db.Column(db.String(10))
-    alma_mater = db.Column(db.String(100))
-    profession = db.Column(db.String(100))
-    company = db.Column(db.String(200))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    alma_mater = StringField('Alma Mater', [Optional(), Length(max=100)])
+    profession = StringField('Profession', [Optional(), Length(max=100)])
+    company = StringField('Company', [Optional(), Length(max=200)])
 
 

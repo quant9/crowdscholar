@@ -11,6 +11,18 @@
     </div>
 {% endmacro %}
 
+{% macro show_messages() %}
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="row">
+          <div class="alert alert-info" role="alert">{{message}}</div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+{% endmacro %}
+
 {% macro form_field(field) %}
     {% set with_label = kwargs.pop('with_label', False) %}
     {% set placeholder = '' %}

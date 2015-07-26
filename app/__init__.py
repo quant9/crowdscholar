@@ -29,8 +29,6 @@ app.register_blueprint(student)
 app.register_blueprint(donor)
 
 
-
-
 # Sample HTTP error handling
 @app.errorhandler(404)
 def not_found(error):

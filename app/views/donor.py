@@ -22,11 +22,11 @@ def browse(scholarship_id=None):
 
 
 @donor.route('/profile')
-@donor.route('/<donor_id>')
+@donor.route('/profile/<int:donor_id>')
 @login_required(user_type=2)
 def profile(donor_id=None):
     if donor_id:
-        donor = Donor.query.filter_by(donor_id=donor_id).first()
+        donor = Donor.query.filter_by(donor_id=donor_id).first_or_404()
         return render_template('profile.html', donor=donor)
     return render_template('profile.html')
 
