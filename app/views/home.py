@@ -34,7 +34,7 @@ def load_user(user_id):
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    flash('You are not logged in.')
+    flash('You are not authorized to view the requested page.')
     return redirect(url_for('home.index'))
 
 @home.route('/')
@@ -55,7 +55,7 @@ def login():
         if user and user.user_type == form.user_type.data:
             if check_password_hash(user.password, form.password.data):
                 login_user(user, remember=False) # TODO: add remember me
-                flash('Welcome %s' % user.first_name)
+                flash('Welcome, %s!' % user.first_name)
                 return redirect(url_for('home.index'))
 
         flash('Wrong email or password', 'error-message')

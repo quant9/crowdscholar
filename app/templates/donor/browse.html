@@ -1,10 +1,9 @@
 {% extends "base.html" %}
-{% block title %}
-  Crowdscholar: browsing scholarship
+{% block title %}Crowdscholar: browsing scholarship
 {% endblock %}
 {% block content %}
   {% from "macros.html" import show_messages %}
-  <h2>Browse Scholarships</h2>
+  <h1>Browse Scholarships</h1>
   {{ show_messages() }}
   {% if scholarship %}
     <p>Viewing scholarship: {{ scholarship.name }}</p>
@@ -25,7 +24,10 @@
         <li>Expires on: {{ scholarship.expiration_date }}</li>
         <li>${{ scholarship.amount_funded }} funded out of ${{ scholarship.amount_target }}</li>
         <li>{{ scholarship.slug }}</li>
-        <li><a href="{{ url_for('donor.donate', scholarship_id=scholarship.scholarship_id) }}">Donate to this scholarship</a></li>
+        <li><a href="{{ url_for('donor.browse', scholarship_id=scholarship.scholarship_id) }}">
+          Go to scholarship page</a></li>
+        <li><a href="{{ url_for('donor.donate', scholarship_id=scholarship.scholarship_id) }}">
+          Donate to this scholarship</a></li>
       </ul>
     {% endfor %}
   {% endif %}

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, g
-from flask.ext.login import login_user, logout_user, current_user
+from flask.ext.login import current_user
 from app import db, login_manager
 from app.forms import CreateScholarshipForm, DonationForm, DonorProfileForm
 from app.models import Donor, Scholarship, Campaign, Donation
@@ -9,26 +9,32 @@ donor = Blueprint('donor', __name__, url_prefix='/donor',
     template_folder='templates/donor', static_folder='static')
 
 
-@donor.route('/browse')
+@donor.route('/browse/')
 @donor.route('/browse/<int:scholarship_id>')
 @login_required(user_type=2)
 def browse(scholarship_id=None):
     if scholarship_id:
-        scholarship = Scholarship.query.join(Donor).filter(Scholarship.scholarship_id==scholarship_id).first() or None
+        scholarship = Scholarship.query.join(Donor).filter(
+            Scholarship.scholarship_id==scholarship_id).first() or None
         if scholarship:
             return render_template('donor/browse.html', scholarship=scholarship)
+        flash("The scholarship you requested is unavailable. \
+            Browse all scholarships below.".format(scholarship_id))
     full_list = Scholarship.query.all()
     return render_template('donor/browse.html', full_list=full_list)
 
 
-@donor.route('/profile')
+@donor.route('/profile/')
 @donor.route('/profile/<int:donor_id>')
 @login_required(user_type=2)
 def profile(donor_id=None):
     if donor_id:
-        donor = Donor.query.filter_by(donor_id=donor_id).first_or_404()
-        return render_template('profile.html', donor=donor)
-    return render_template('profile.html')
+        donor = Donor.query.filter_by(donor_id=donor_id).first() or None
+        if donor:
+            return render_template('donor/profile.html', donor=donor)
+        flash("The donor profile you selected is unavailable. \
+            We've redirected you to your own profile.".format(donor_id))
+    return render_template('donor/profile.html')
 
 
 @donor.route('/create', methods=['GET', 'POST'])

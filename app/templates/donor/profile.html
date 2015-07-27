@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
   {% from "macros.html" import show_messages %}
-  <h2>Your Crowdscholar donor profile</h2>
+  <h1>Your Crowdscholar donor profile</h1>
   {{ show_messages() }}
   <a href="{{ url_for('donor.update') }}">Edit your profile</a>
 
