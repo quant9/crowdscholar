@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+  {% from "macros.html" import show_messages %}
+  <h1>Make a Donation</h1>
+  {{ show_messages() }}
+  <a href="{{ url_for('donor.browse') }}">Back to Scholarships</a>
+
+{% endblock %}

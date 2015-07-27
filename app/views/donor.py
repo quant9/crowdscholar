@@ -44,31 +44,37 @@ def create(donor_id):
     if form.validate_on_submit():
         flash('scholarship was successfully created!')
         return redirect(url_for('home.index'))
-    return render_template('create.html')
+    return render_template('donor/create.html')
 
 
-@donor.route('/<int:scholarship_id>/donate')
+@donor.route('/donate/<int:scholarship_id>')
 @login_required(user_type=2)
 def donate(scholarship_id):
-    form = DonationForm(request.form)
-    if form.validate_on_submit():
-        pass
-    return render_template('donate.html', form=form, scholarship_id=scholarship_id)
+    scholarship = Scholarship.query.filter_by(scholarship_id=scholarship_id).first() or None
+    if scholarship:
+        form = DonationForm(request.form)
+        if form.validate_on_submit():
+            flash('Thank you for your donation!')
+        return render_template('donor/donate.html', form=form, scholarship_id=scholarship_id)
+    flash('Error donating to the specified scholarship, please select another.')
+    return redirect(url_for('donor.browse'))
 
 
 @donor.route('/update', methods=['GET', 'POST'])
 @login_required(user_type=2)
 def update():
-    donor = Donor.query.filter_by(id=current_user.id).first_or_404()
-    form = DonorProfileForm(request.form)
-    if form.validate_on_submit():
-        form.populate_obj(donor)
-        db.session.commit()
-        flash('Your changes have been saved.')
-        return redirect(url_for('update'))
-    flash('Please make sure all fields are filled out correctly.')
-    return render_template('update.html', form=form)
-
+    donor = Donor.query.filter_by(id=current_user.id).first() or None
+    if donor:
+        form = DonorProfileForm(request.form)
+        if form.validate_on_submit():
+            form.populate_obj(donor)
+            db.session.commit()
+            flash('Your changes have been saved.')
+            return redirect(url_for('donor.update'))
+        flash('Please make sure all fields are filled out correctly.')
+        return render_template('donor/update.html', form=form)
+    flash('Your donor information could not be retrieved. We apologize for the inconvenience.')
+    return redirect(url_for('donor.profile'))
 
 
 # https://exploreflask.com/blueprints.html
