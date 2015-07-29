@@ -81,11 +81,19 @@ def register():
         try:
             db.session.add(user)
             db.session.commit()
+        except IntegrityError:
+            flash('An account with this email already exists.')
+        else:
+            if form.user_type.data == 1:
+                student = Student(user_id = User.query.filter_by(email=form.email.data).first().id)
+                db.session.add(student)
+            elif form.user_type.data == 2:
+                donor = Donor(user_id = User.query.filter_by(email=form.email.data).first().id)
+                db.session.add(donor)
+            db.session.commit()
             login_user(user, remember=False) # TODO: add remember me
             flash('Thanks for registering')
             return redirect(url_for('home.index'))
-        except IntegrityError:
-            flash('An account with this email already exists.')
 
     return render_template("home/register.html", form=form)
 

@@ -17,13 +17,6 @@ class User(db.Model, UserMixin):
     user_type = db.Column(db.SmallInteger, default=constants.OTHERUSER)
     status = db.Column(db.SmallInteger, default=constants.NEW)
 
-    def __init__(self, first_name, last_name, email, password, user_type):
-        self.first_name  = first_name
-        self.last_name  = last_name
-        self.email = email
-        self.password = password
-        self.user_type = user_type
-
     def get_status(self):
         return constants.STATUS[self.status]
 
@@ -37,10 +30,11 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return '<User %r>' % (self.first_name)
 
-class Student(User):
+class Student(db.Model):
     __tablename__ = 'students'
     student_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
 
 class Campaign(db.Model):
     __tablename__ = 'campaigns'
@@ -48,7 +42,7 @@ class Campaign(db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey('students.student_id'))
 
 
-class Donor(User):
+class Donor(db.Model):
     __tablename__ = 'donors'
     donor_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -61,6 +55,9 @@ class Donor(User):
     alma_mater = db.Column(db.String(100), nullable=True)
     profession = db.Column(db.String(100), nullable=True)
     company = db.Column(db.String(200), nullable=True)
+
+    def __init__(self, user_id):
+        self.user_id = user_id
 
 class Scholarship(db.Model):
     __tablename__ = 'scholarships'

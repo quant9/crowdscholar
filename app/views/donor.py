@@ -27,8 +27,9 @@ def browse(scholarship_id=None):
 @donor.route('/profile/')
 @donor.route('/profile/<int:donor_id>')
 @login_required(user_type=2)
-def profile(donor_id=None):
+def profile(user_id=None, donor_id=None):
     if donor_id:
+        user = User.query.filter_by(id=user_id).first() or None
         donor = Donor.query.filter_by(donor_id=donor_id).first() or None
         if donor:
             return render_template('donor/profile.html', donor=donor)

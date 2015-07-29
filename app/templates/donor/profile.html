@@ -1,8 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
   {% from "macros.html" import show_messages %}
-  <h1>Your Crowdscholar Donor Profile</h1>
+  <h1>Crowdscholar Donor Profile</h1>
   {{ show_messages() }}
-  <a href="{{ url_for('donor.update') }}">Edit your rofile</a>
-
+  {% if donor %}
+    <p>Viewing donor profile: {{ donor.first_name }} {{ donor.last_name }}</p>
+    <ul>
+      <li>Member since: {{ donor.date_created }}</li>
+      <li>Scholarships donated to: </li>
+    </ul>
+  {% else %}<p>Viewing your donor profile</p>
+    <ul>
+      <li>Member since: {{ current_user.date_created }}</li>
+      <li>Scholarships donated to: </li>
+    </ul>
+  {% endif %}
+  <a href="{{ url_for('donor.update') }}">Edit your profile</a>
 {% endblock %}
