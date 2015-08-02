@@ -3,7 +3,8 @@ from wtforms import StringField, TextAreaField, PasswordField, BooleanField, Rad
     SelectField, IntegerField
 # from wtforms fmport RecaptchaField
 
-from wtforms.validators import InputRequired, Email, EqualTo, Length, Optional, NumberRange
+from wtforms.validators import InputRequired, Email, EqualTo, Length, Optional, Regexp
+from . import constants
 
 message = 'Field is required.'
 
@@ -48,11 +49,14 @@ class CreateScholarshipForm(Form):
 class ProfileForm(Form):
     gender = SelectField('Gender', [InputRequired(message=message)],
         choices=[(1, 'Male'), (2, 'Female'), (3, 'Other')], coerce=int)
-    address = StringField('Street Address', [Length(max=300)])
+    # TODO: check valid addresses
+    address = StringField('Street Address', [InputRequired(message=message),
+        Regexp('^\d'), Length(max=300)])
     apt_no = StringField('Apartment # (optional)', [Length(max=5), Optional()])
-    city = StringField('City', [Length(max=100)])
-    state = StringField('Address (number, street, apt #)', [Length(min=2, max=2)])
-    zipcode = IntegerField('Zip Code (5-digit)', [NumberRange(min=10000, max=99999)])
+    city = StringField('City', [InputRequired(message=message), Length(max=100)])
+    state = SelectField('State (United States only)', choices=constants.STATES)
+    zipcode = StringField('Zip Code (5-digit)', 
+        [Regexp('\d{5}', message='Not a valid zip code.')])
 
 class StudentProfileForm(ProfileForm):
     pass
@@ -61,5 +65,5 @@ class DonorProfileForm(ProfileForm):
     alma_mater = StringField('Alma Mater', [Optional(), Length(max=100)])
     profession = StringField('Profession', [Optional(), Length(max=100)])
     company = StringField('Company', [Optional(), Length(max=200)])
-
+    bio = TextAreaField('Tell us about yourself (500 characters)', [Optional(), Length(max=500)])
 

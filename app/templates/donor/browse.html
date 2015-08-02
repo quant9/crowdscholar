@@ -9,12 +9,14 @@
     <p>Viewing scholarship: {{ scholarship.name }}</p>
     <ul>
       <li>Scholarship ID: {{ scholarship.scholarship_id }}</li>
-      <li>Created by:</li>
+      <li>Created by: {{ scholarship.donor_id }}</li>
       <li>Expires on: {{ scholarship.expiration_date }}</li>
       <li>${{ scholarship.amount_funded }} funded out of ${{ scholarship.amount_target }}</li>
       <li>{{ scholarship.slug }}</li>
       <li><a href="{{ url_for('donor.donate', scholarship_id=scholarship.scholarship_id) }}">Donate to this scholarship</a></li>
+      <li>Save this scholarship</li>
     </ul>
+    <a href="{{ url_for('donor.browse') }}">Back to scholarships</a>
   {% else %}<p>Viewing all scholarships</p>
     {% for scholarship in full_list %}
       <ul>

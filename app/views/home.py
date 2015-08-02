@@ -72,11 +72,11 @@ def register():
         if form.user_type.data == 1:
             user = User(first_name=form.first_name.data, last_name=form.last_name.data,
                 email=form.email.data, password=generate_password_hash(form.password.data),
-                user_type = 1)
+                user_type=1)
         elif form.user_type.data == 2:
             user = User(first_name=form.first_name.data, last_name=form.last_name.data,
                 email=form.email.data, password=generate_password_hash(form.password.data),
-                user_type = 2)
+                user_type=2)
 
         try:
             db.session.add(user)
@@ -85,10 +85,10 @@ def register():
             flash('An account with this email already exists.')
         else:
             if form.user_type.data == 1:
-                student = Student(user_id = User.query.filter_by(email=form.email.data).first().id)
+                student = Student(user_id=User.query.filter_by(email=form.email.data).first().id)
                 db.session.add(student)
             elif form.user_type.data == 2:
-                donor = Donor(user_id = User.query.filter_by(email=form.email.data).first().id)
+                donor = Donor(user_id=User.query.filter_by(email=form.email.data).first().id)
                 db.session.add(donor)
             db.session.commit()
             login_user(user, remember=False) # TODO: add remember me

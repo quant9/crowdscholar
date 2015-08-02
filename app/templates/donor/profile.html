@@ -3,16 +3,20 @@
   {% from "macros.html" import show_messages %}
   <h1>Crowdscholar Donor Profile</h1>
   {{ show_messages() }}
-  {% if donor %}
-    <p>Viewing donor profile: {{ donor.first_name }} {{ donor.last_name }}</p>
+  {% if user %}
+    <p>Viewing donor profile: {{ user.first_name }} {{ user.last_name }}</p>
     <ul>
-      <li>Member since: {{ donor.date_created }}</li>
+      <li>Member since: {{ user.date_created }}</li>
       <li>Scholarships donated to: </li>
+      <li>From: {{ donor.city }}, {{ donor.state }}</li>
     </ul>
-  {% else %}<p>Viewing your donor profile</p>
+  {% elif donor %}<p>Viewing your donor profile</p>
     <ul>
+      <li>Name: {{ current_user.first_name }} {{ current_user.last_name }}</li>
       <li>Member since: {{ current_user.date_created }}</li>
       <li>Scholarships donated to: </li>
+      <li>From: {{ donor.city }}, {{ donor.state }}</li>
+      
     </ul>
   {% endif %}
   <a href="{{ url_for('donor.update') }}">Edit your profile</a>

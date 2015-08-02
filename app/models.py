@@ -49,15 +49,17 @@ class Donor(db.Model):
     gender = db.Column(db.SmallInteger, nullable=True)
     address = db.Column(db.String(300), nullable=True)
     apt_no = db.Column(db.String(10), nullable=True)
+    # phone_no = db.Column(db.String(20), nullable=True)
     city = db.Column(db.String(100), nullable=True)
     state = db.Column(db.String(10), nullable=True)
     zipcode = db.Column(db.Integer, nullable=True)
     alma_mater = db.Column(db.String(100), nullable=True)
     profession = db.Column(db.String(100), nullable=True)
     company = db.Column(db.String(200), nullable=True)
+    bio = db.Column(db.Text(500), nullable=True)
+    scholarships_created = db.relationship('Scholarship')
+    donations = db.relationship('Donation', backref='donor', lazy='dynamic')
 
-    def __init__(self, user_id):
-        self.user_id = user_id
 
 class Scholarship(db.Model):
     __tablename__ = 'scholarships'
@@ -70,17 +72,12 @@ class Scholarship(db.Model):
     status = db.Column(db.Integer, default=constants.FUNDING)
     description = db.Column(db.Text, nullable=True)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
-    expiration_date = db.Column(db.DateTime,
-        default=datetime.datetime(2099,12,31))
+    expiration_date = db.Column(db.DateTime, default=datetime.datetime(2099,12,31))
+    donations_to = db.relationship('Donation', backref='scholarship', lazy='dynamic')
 
-    def __init__(self, creator_id, name, slug, target_amount, 
-        description=None, expiration_date=None):
-        self.creator_id = creator_id
-        self.name = name
-        self.slug = slug
-        self.target_amount = target_amount
-        self.description = description
-        self.expiration_date = expiration_date
+    def __repr__(self):
+        return '<Scholarship %r>' % (self.name)
+
 
 class Donation(db.Model):
     __tablename__ = 'donations'
@@ -91,13 +88,8 @@ class Donation(db.Model):
     cleared = db.Column(db.Boolean, default=False)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
 
-    def __init__(self, donor_id, scholarship_id, amount, cleared=False):
-        self.donor_id = donor_id
-        self.scholarship_id = scholarship_id
-        self.amount = amount
-        self.cleared = cleared
-
-
+    def __repr__(self):
+        return '<Donation %r>' % (self.donation_id)
 
 
 
