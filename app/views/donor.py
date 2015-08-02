@@ -16,7 +16,6 @@ def browse(scholarship_id=None):
     if scholarship_id:
         scholarship = db.session.query(Scholarship).join(Donor).filter(
             Scholarship.scholarship_id==scholarship_id).first() or None
-        import pdb; pdb.set_trace()
         if scholarship:
             return render_template('donor/browse.html', scholarship=scholarship)
         flash("The scholarship you requested is unavailable. \

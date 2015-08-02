@@ -105,7 +105,3 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('home.index'))
 
-
-
-
-

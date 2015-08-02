@@ -57,8 +57,11 @@ class Donor(db.Model):
     profession = db.Column(db.String(100), nullable=True)
     company = db.Column(db.String(200), nullable=True)
     bio = db.Column(db.Text(500), nullable=True)
-    scholarships_created = db.relationship('Scholarship')
-    donations = db.relationship('Donation', backref='donor', lazy='dynamic')
+    scholarships_created = db.relationship('Scholarship', backref='donors', lazy='dynamic')
+    donations = db.relationship('Donation', backref='donors', lazy='dynamic')
+
+    def get_user(self):
+        return User.query.filter_by(id=self.user_id).first()
 
 
 class Scholarship(db.Model):
@@ -73,7 +76,7 @@ class Scholarship(db.Model):
     description = db.Column(db.Text, nullable=True)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     expiration_date = db.Column(db.DateTime, default=datetime.datetime(2099,12,31))
-    donations_to = db.relationship('Donation', backref='scholarship', lazy='dynamic')
+    donations_to = db.relationship('Donation', backref='scholarships', lazy='dynamic')
 
     def __repr__(self):
         return '<Scholarship %r>' % (self.name)
@@ -83,7 +86,7 @@ class Donation(db.Model):
     __tablename__ = 'donations'
     donation_id = db.Column(db.Integer, primary_key=True)
     donor_id = db.Column(db.Integer, db.ForeignKey('donors.donor_id'))
-    scholarship_id = db.Column(db.Integer, db.ForeignKey('donors.donor_id'))
+    scholarship_id = db.Column(db.Integer, db.ForeignKey('scholarships.scholarship_id'))
     amount = db.Column(db.Float, nullable=False)
     cleared = db.Column(db.Boolean, default=False)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
