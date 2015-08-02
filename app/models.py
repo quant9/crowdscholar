@@ -16,6 +16,8 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(192), nullable=False)
     user_type = db.Column(db.SmallInteger, default=constants.OTHERUSER)
     status = db.Column(db.SmallInteger, default=constants.NEW)
+    is_student = db.relationship('Student', backref='users', lazy='dynamic')
+    is_donor = db.relationship('Donor', backref='users', lazy='dynamic')
 
     def get_status(self):
         return constants.STATUS[self.status]
@@ -61,7 +63,7 @@ class Donor(db.Model):
     donations = db.relationship('Donation', backref='donors', lazy='dynamic')
 
     def get_user(self):
-        return User.query.filter_by(id=self.user_id).first()
+        return User.query.join().filter_by(id=self.user_id).first()
 
 
 class Scholarship(db.Model):
@@ -77,6 +79,19 @@ class Scholarship(db.Model):
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     expiration_date = db.Column(db.DateTime, default=datetime.datetime(2099,12,31))
     donations_to = db.relationship('Donation', backref='scholarships', lazy='dynamic')
+
+    @classmethod
+    def get_scholarship(cls, s_id):
+        return Scholarship.query.join(Donor).filter(Scholarship.scholarship_id == s_id).first()
+
+    def get_creator(self):
+        return User.query.join(Donor).filter(Donor.donor_id == self.creator_id).first()
+
+    def get_num_donors(self):
+        return Donation.query.filter_by(scholarship_id=self.scholarship_id).count()
+
+    def get_donors(self):
+        return Donor.query.join(Donation).filter(Donation.scholarship_id == self.scholarship_id).distinct().all()
 
     def __repr__(self):
         return '<Scholarship %r>' % (self.name)

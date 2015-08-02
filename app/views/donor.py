@@ -14,8 +14,7 @@ donor = Blueprint('donor', __name__, url_prefix='/donor',
 @login_required(user_type=2)
 def browse(scholarship_id=None):
     if scholarship_id:
-        scholarship = db.session.query(Scholarship).join(Donor).filter(
-            Scholarship.scholarship_id==scholarship_id).first() or None
+        scholarship = Scholarship.get_scholarship(scholarship_id)
         if scholarship:
             return render_template('donor/browse.html', scholarship=scholarship)
         flash("The scholarship you requested is unavailable. \
@@ -31,8 +30,7 @@ def profile(user_id=None, donor_id=None):
     if donor_id:
         donor = Donor.query.filter_by(donor_id=donor_id).first() or None
         if donor:
-            user = User.query.filter_by(id=donor.user_id).first() or None
-            return render_template('donor/profile.html', donor=donor, user=user)
+            return render_template('donor/profile.html', donor=donor)
         flash("The donor profile you selected is unavailable. \
             We've redirected you to your own profile.".format(donor_id))
     donor = Donor.query.filter_by(user_id=current_user.id).first() or None
@@ -72,7 +70,7 @@ def update():
             form.populate_obj(donor)
             db.session.commit()
             flash('Your changes have been saved.')
-            return redirect(url_for('donor.update'))
+            return redirect(url_for('donor.profile'))
         return render_template('donor/update.html', form=form)
     flash('Your donor information could not be retrieved. We apologize for the inconvenience.')
     return redirect(url_for('donor.profile'))
