@@ -14,6 +14,8 @@ Setup instructions
  
  3. Make a local mysql database 'crowdscholar'
  4. Setup databases using the following commands within python shell:
+
         from app import db
-        db.create_all()  # creates local mysql db and tables`
+        db.create_all()  # creates local mysql db and tables
+
  5. Launch app with `python run.py`
