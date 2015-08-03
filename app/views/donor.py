@@ -28,7 +28,7 @@ def browse(scholarship_id=None):
 @login_required(user_type=2)
 def profile(user_id=None, donor_id=None):
     if donor_id:
-        donor = Donor.query.filter_by(donor_id=donor_id).first() or None
+        donor = Donor.get_donor(donor_id=donor_id)
         if donor:
             return render_template('donor/profile.html', donor=donor)
         flash("The donor profile you selected is unavailable. \
@@ -47,17 +47,27 @@ def create(donor_id):
     return render_template('donor/create.html')
 
 
-@donor.route('/donate/<int:scholarship_id>')
+@donor.route('/donate/')
+@donor.route('/donate/<int:scholarship_id>', methods=['GET', 'POST'])
 @login_required(user_type=2)
-def donate(scholarship_id):
-    scholarship = Scholarship.query.filter_by(scholarship_id=scholarship_id).first() or None
-    if scholarship:
-        form = DonationForm(request.form)
-        if form.validate_on_submit():
-            flash('Thank you for your donation!')
-        return render_template('donor/donate.html', form=form, scholarship_id=scholarship_id)
-    flash('Error donating to the specified scholarship, please select another.')
-    return redirect(url_for('donor.browse'))
+def donate(scholarship_id=None):
+    scholarship = Scholarship.get_scholarship(scholarship_id)
+    if not scholarship:
+        flash('Error finding donation page. Please make sure the scholarship ID is correct.')
+        return redirect(url_for('donor.browse'))
+
+    form = DonationForm(request.form)
+    if form.validate_on_submit():
+        amount = form.amount.data or form.other_amount.data
+        donation = Donation(donor_id=Donor.get_donor(user_id=current_user.id).donor_id, 
+            scholarship_id=scholarship_id, message=form.message.data,
+            amount=amount, cleared=False)
+        db.session.add(donation)
+        db.session.commit()
+        flash('Thank you for your donation!')
+        return render_template('donor/success.html', scholarship=scholarship, donation=donation)
+
+    return render_template('donor/donate.html', form=form, scholarship=scholarship)
 
 
 @donor.route('/update', methods=['GET', 'POST'])

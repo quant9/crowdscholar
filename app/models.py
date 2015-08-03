@@ -58,12 +58,20 @@ class Donor(db.Model):
     alma_mater = db.Column(db.String(100), nullable=True)
     profession = db.Column(db.String(100), nullable=True)
     company = db.Column(db.String(200), nullable=True)
-    bio = db.Column(db.Text(500), nullable=True)
+    bio = db.Column(db.Text(500), default="I'm proud to be a donor on Crowdscholar!")
     scholarships_created = db.relationship('Scholarship', backref='donors', lazy='dynamic')
     donations = db.relationship('Donation', backref='donors', lazy='dynamic')
 
+    @classmethod
+    def get_donor(cls, user_id=None, donor_id=None):
+        if user_id:
+            return Donor.query.filter_by(user_id=user_id).first()
+        if donor_id:
+            return Donor.query.filter_by(donor_id=donor_id).first()
+        return None
+
     def get_user(self):
-        return User.query.join().filter_by(id=self.user_id).first()
+        return User.query.filter_by(id=self.user_id).first()
 
 
 class Scholarship(db.Model):
@@ -103,6 +111,7 @@ class Donation(db.Model):
     donor_id = db.Column(db.Integer, db.ForeignKey('donors.donor_id'))
     scholarship_id = db.Column(db.Integer, db.ForeignKey('scholarships.scholarship_id'))
     amount = db.Column(db.Float, nullable=False)
+    message = db.Column(db.Text(500), nullable=True)
     cleared = db.Column(db.Boolean, default=False)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
 
