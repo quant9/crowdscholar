@@ -13,12 +13,18 @@
       <li>Expires on: {{ scholarship.expiration_date }}</li>
       <li>${{ scholarship.amount_funded | round(0) }} funded out of ${{ scholarship.amount_target | round(0) }}</li>
       <li>{{ scholarship.slug }}</li>
-      <li>Number of donors: {{ scholarship.get_num_donors() }}</li>
-      <li>Donors:
+      {% set num_donors = scholarship.get_num_donors() %}
+      <li>Number of donors: {{ num_donors }}</li>
+      {% if num_donors > 0 %}
+        <li>Donors:</li>
+        <ul>
         {% for donor in scholarship.get_donors() %}
-          <li>{{ donor.first_name }} {{ donor.last_name[:1] }}.</li>
+          <li>{{ donor.first_name | capitalize }} {{ donor.last_name[:1] | upper }}.: {{ donor.amount }}</li>
         {% endfor %}
-      </li>
+        </ul>
+      {% else %}
+        <li>Be the first to donate!</li>
+      {% endif %}
     </ul>
     <ul>
       <li><a href="{{ url_for('donor.donate', scholarship_id=scholarship.scholarship_id) }}">Donate to this scholarship</a></li>

@@ -99,7 +99,12 @@ class Scholarship(db.Model):
         return Donation.query.filter_by(scholarship_id=self.scholarship_id).count()
 
     def get_donors(self):
-        return Donor.query.join(Donation).filter(Donation.scholarship_id == self.scholarship_id).distinct().all()
+        query = ''' SELECT * FROM (users JOIN donors on users.id = donors.user_id) 
+                    JOIN donations ON donors.donor_id = donations.donor_id 
+                    WHERE donations.scholarship_id = {}
+                '''
+        return db.session.execute(query.format(self.scholarship_id))
+        # return db.session.query(User).join(Donor).join(Donation).filter(Donation.scholarship_id == self.scholarship_id).distinct().all()
 
     def __repr__(self):
         return '<Scholarship %r>' % (self.name)
