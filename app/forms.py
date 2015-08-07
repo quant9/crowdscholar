@@ -63,7 +63,7 @@ class DonationForm(Form):
     amount = RadioField('Amount', [InputRequired(message=message)],
         choices=[(10, '$10'), (50, '$50'), (100, '$100'), (250, '$250'), (500, '$500'), (0, 'Other amount')],
         default = 50, coerce=int)
-    other_amount = IntegerField('Other amount: ($1 increments)', [RequiredIf('amount')])
+    other_amount = IntegerField('Other amount: ($1 increments)', [RequiredIf('amount')], default=0)
     message = TextAreaField('Send a message to the scholarship creator: (optional)', [Optional()])
 
 

@@ -8,7 +8,14 @@
     <p>Viewing donor profile: {{ user.first_name }} {{ user.last_name }}</p>
     <ul>
       <li>Member since: {{ user.date_created }}</li>
-      <li>Scholarships donated to: </li>
+      <li>Scholarships donated to:</li>
+      {% if donor.donations %}
+      <ul>
+        {% for donation in donor.donations %}
+          <li><a href="{{ url_for('donor.browse', scholarship_id=donation.scholarship_id) }}">{{ donation.scholarship_id }}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
       <li>From: {{ donor.city }}, {{ donor.state }}</li>
       <li>Alma Mater: {{ donor.alma_mater }}</li>
       <li>Profession: {{ donor.profession }}</li>

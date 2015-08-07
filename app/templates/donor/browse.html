@@ -11,7 +11,7 @@
       <li>Scholarship ID: {{ scholarship.scholarship_id }}</li>
       <li>Created by: {{ scholarship.get_creator().first_name }}</li>
       <li>Expires on: {{ scholarship.expiration_date }}</li>
-      <li>${{ scholarship.amount_funded | round(0) }} funded out of ${{ scholarship.amount_target | round(0) }}</li>
+      <li>${{ scholarship.amount_funded | round|int }} funded out of ${{ scholarship.amount_target | round|int }}</li>
       <li>{{ scholarship.slug }}</li>
       {% set num_donors = scholarship.get_num_donors() %}
       <li>Number of donors: {{ num_donors }}</li>
@@ -19,7 +19,7 @@
         <li>Donors:</li>
         <ul>
         {% for donor in scholarship.get_donors() %}
-          <li>{{ donor.first_name | capitalize }} {{ donor.last_name[:1] | upper }}.: {{ donor.amount }}</li>
+          <li>{{ donor.first_name | capitalize }} {{ donor.last_name[:1] | upper }}.: ${{ donor.amount | round|int }}</li>
         {% endfor %}
         </ul>
       {% else %}

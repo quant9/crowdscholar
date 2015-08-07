@@ -14,3 +14,7 @@
 //         });
 //     });
 // });
+
+function check() {
+  document.getElementById('other-amount').readOnly = !document.getElementById('amount-5').checked;
+}

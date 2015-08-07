@@ -62,9 +62,12 @@ def donate(scholarship_id=None):
         donation = Donation(donor_id=Donor.get_donor(user_id=current_user.id).donor_id, 
             scholarship_id=scholarship_id, message=form.message.data,
             amount=amount, cleared=False)
+        scholarship.amount_funded += donation.amount
+        if scholarship.amount_funded >= scholarship.amount_target:
+            scholarship.status = 1
         db.session.add(donation)
         db.session.commit()
-        flash('Thank you for your donation!')
+        flash('Thank you for your donation, {}!'.format(current_user.first_name))
         return render_template('donor/success.html', scholarship=scholarship, donation=donation)
 
     return render_template('donor/donate.html', form=form, scholarship=scholarship)

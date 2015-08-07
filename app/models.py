@@ -16,8 +16,8 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(192), nullable=False)
     user_type = db.Column(db.SmallInteger, default=constants.OTHERUSER)
     status = db.Column(db.SmallInteger, default=constants.NEW)
-    is_student = db.relationship('Student', backref='users', lazy='dynamic')
-    is_donor = db.relationship('Donor', backref='users', lazy='dynamic')
+    is_student = db.relationship('Student', backref='users')
+    is_donor = db.relationship('Donor', backref='users')
 
     def get_status(self):
         return constants.STATUS[self.status]
@@ -59,8 +59,8 @@ class Donor(db.Model):
     profession = db.Column(db.String(100), nullable=True)
     company = db.Column(db.String(200), nullable=True)
     bio = db.Column(db.Text(500), default="I'm proud to be a donor on Crowdscholar!")
-    scholarships_created = db.relationship('Scholarship', backref='donors', lazy='dynamic')
-    donations = db.relationship('Donation', backref='donors', lazy='dynamic')
+    scholarships_created = db.relationship('Scholarship', backref='donors')
+    donations = db.relationship('Donation', backref='donors')
 
     @classmethod
     def get_donor(cls, user_id=None, donor_id=None):
@@ -86,7 +86,7 @@ class Scholarship(db.Model):
     description = db.Column(db.Text, nullable=True)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     expiration_date = db.Column(db.DateTime, default=datetime.datetime(2099,12,31))
-    donations_to = db.relationship('Donation', backref='scholarships', lazy='dynamic')
+    donations_to = db.relationship('Donation', backref='scholarships')
 
     @classmethod
     def get_scholarship(cls, s_id):
@@ -104,7 +104,6 @@ class Scholarship(db.Model):
                     WHERE donations.scholarship_id = {}
                 '''
         return db.session.execute(query.format(self.scholarship_id))
-        # return db.session.query(User).join(Donor).join(Donation).filter(Donation.scholarship_id == self.scholarship_id).distinct().all()
 
     def __repr__(self):
         return '<Scholarship %r>' % (self.name)
