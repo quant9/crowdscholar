@@ -68,7 +68,21 @@ class DonationForm(Form):
 
 
 class CreateScholarshipForm(Form):
-    pass
+    name = StringField('Scholarship name', [InputRequired(message=message)])
+    category = SelectField('Select category', choices=constants.CATEGORIES)
+    affiliation = SelectField('Select affiliation', choices=constants.AFFILIATIONS)
+    grade_9 = BooleanField('9th')
+    grade_10 = BooleanField('10th')
+    grade_11 = BooleanField('11th')
+    grade_12 = BooleanField('12th')
+    undergrad_not_enrolled = BooleanField('High School graduate not enrolled in college')
+    undergrad_enrolled = BooleanField('Current college student')
+    postgrad_not_enrolled = BooleanField('Prospective graduate student')
+    postgrad_enrolled = BooleanField('Current graduate student')
+    slug = TextAreaField('Brief description', [InputRequired(message=message)])
+    amount_target = IntegerField('Other amount: ($1 increments)', 
+        [InputRequired(message=message)], default=2500)
+    description = TextAreaField('Extended description', [InputRequired(message=message)])
 
 
 class ProfileForm(Form):

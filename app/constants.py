@@ -34,6 +34,7 @@ SCHOLARSHIP_STATUS = {
     WITHDRAWN: 'withdrawn',
     }
 
+# U.S. states
 STATES = [('Alabama', 'Alabama'),
 ('Alaska', 'Alaska'),
 ('Arizona', 'Arizona'),
@@ -93,3 +94,48 @@ STATES = [('Alabama', 'Alabama'),
 ('Puerto Rico', 'Puerto Rico'),
 ('Virgin Islands', 'Virgin Islands'),
 ]
+
+#
+CATEGORIES = [
+(0, 'General'),
+(1, 'Athletic'),
+(2, 'Community & Local'),
+(3, 'Academics (General)'),
+(4, 'Art & Fashion'),
+(5, 'Music & Performance'),
+(6, 'Science & Technology'),
+(7, 'Business & Entrepreneurship'),
+(8, 'Vocational / Professional'),
+(9, 'Essay & Other Competitions'),
+]
+
+AFFILIATIONS = [
+(0, 'General / None'),
+(1, 'Ethnic Group'),
+(2, 'Religious Group'),
+(3, 'Military / Veteran'),
+(4, 'Political Organization'),
+(5, 'Disabled & Special Needs'),
+(6, 'Employer Affiliation'),
+(7, 'Nonprofit Organization / Foundation'),
+(8, 'Interest / Hobby Group'),
+(9, 'Other Affiliation'),
+]
+
+    undergrad_not_enrolled = BooleanField('High School graduate not enrolled in college')
+    undergrad_enrolled = BooleanField('Current college student')
+    postgrad_not_enrolled = BooleanField('Prospective graduate student')
+    postgrad_enrolled = BooleanField('Current graduate student')
+
+
+
+
+
+
+
+
+
+
+
+
+
