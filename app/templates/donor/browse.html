@@ -36,7 +36,7 @@
       <ul>
         <li>Scholarship: {{ scholarship.name }}</li>
         <li>Scholarship ID: {{ scholarship.scholarship_id }}</li>
-        <li>Created by:</li>
+        <li>Created by: {{ scholarship.get_creator().first_name }}</li>
         <li>Expires on: {{ scholarship.expiration_date }}</li>
         <li>${{ scholarship.amount_funded }} funded out of ${{ scholarship.amount_target }}</li>
         <li>{{ scholarship.slug }}</li>

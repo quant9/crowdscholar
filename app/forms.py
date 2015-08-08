@@ -27,13 +27,12 @@ class RequiredIf(Required):
 class RegisterForm(Form):
     user_type = RadioField('Student or Donor?', [InputRequired(message=message)],
         choices=[(1, 'Student'), (2, 'Donor')], default=1, coerce=int)
-    first_name = StringField('First Name', [InputRequired(message=message)])
-    last_name = StringField('Last Name', [InputRequired(message=message)])
+    first_name = StringField('First / given name', [InputRequired(message=message)])
+    last_name = StringField('Last name (family name / surname)', [InputRequired(message=message)])
     email = StringField('Email Address', [InputRequired(message=message), Email()])
     password = PasswordField('Password', [InputRequired(message=message)])
     confirm = PasswordField('Repeat Password', [
-        InputRequired(message=message),
-        EqualTo('password', message='Passwords must match')])
+        InputRequired(message=message), EqualTo('password', message='Passwords must match')])
     accept_tos = BooleanField('I accept the TOS', [InputRequired(message=message)])
     # recaptcha = RecaptchaField()
 
@@ -63,7 +62,8 @@ class DonationForm(Form):
     amount = RadioField('Amount', [InputRequired(message=message)],
         choices=[(10, '$10'), (50, '$50'), (100, '$100'), (250, '$250'), (500, '$500'), (0, 'Other amount')],
         default = 50, coerce=int)
-    other_amount = IntegerField('Other amount: ($1 increments)', [RequiredIf('amount')], default=0)
+    other_amount = IntegerField('Other amount: ($1 increments)', 
+        [RequiredIf('amount', message=message)], default=0)
     message = TextAreaField('Send a message to the scholarship creator: (optional)', [Optional()])
 
 
@@ -74,7 +74,6 @@ class CreateScholarshipForm(Form):
 class ProfileForm(Form):
     gender = SelectField('Gender', [InputRequired(message=message)],
         choices=[(1, 'Male'), (2, 'Female'), (3, 'Other')], coerce=int)
-    # TODO: check valid addresses
     address = StringField('Street Address', [InputRequired(message=message),
         Regexp('^\d'), Length(max=300)])
     apt_no = StringField('Apartment # (optional)', [Length(max=5), Optional()])
@@ -82,6 +81,8 @@ class ProfileForm(Form):
     state = SelectField('State (United States only)', choices=constants.STATES)
     zipcode = StringField('Zip Code (5-digit)', 
         [Regexp('\d{5}', message='Not a valid zip code.')])
+    phone = StringField('Phone number', [InputRequired(message=message), Length(max=20),
+        Regexp('^[0-9(]+.+\d$')])
 
 class StudentProfileForm(ProfileForm):
     pass
@@ -91,6 +92,7 @@ class DonorProfileForm(ProfileForm):
     alma_mater = StringField('Alma Mater', [Optional(), Length(max=100)])
     profession = StringField('Profession', [Optional(), Length(max=100)])
     company = StringField('Company', [Optional(), Length(max=200)])
-    bio = TextAreaField('Tell us about yourself (500 characters)', [Optional(), Length(max=500)])
+    bio = TextAreaField('Tell us about yourself (1000 characters max)', 
+        [Optional(), Length(max=1000)])
 
 
