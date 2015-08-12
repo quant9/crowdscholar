@@ -1,15 +1,21 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, g
+import datetime
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.ext.login import current_user
 from app import db, login_manager
 from app.forms import CreateScholarshipForm, DonationForm, DonorProfileForm
 from app.models import User, Donor, Scholarship, Campaign, Donation
 from .home import login_required
+from config import RESULTS_PER_PAGE
 
 donor = Blueprint('donor', __name__, url_prefix='/donor',
     template_folder='templates/donor', static_folder='static')
 
 
+def now():
+    return datetime.datetime.now()
+
 @donor.route('/browse/')
+@donor.route('/browse/page=<int:page_num>')
 @donor.route('/browse/<int:scholarship_id>')
 @login_required(user_type=2)
 def browse(scholarship_id=None):
@@ -19,8 +25,9 @@ def browse(scholarship_id=None):
             return render_template('donor/browse.html', scholarship=scholarship)
         flash("The scholarship you requested is unavailable. \
             Browse all scholarships below.".format(scholarship_id))
-    full_list = Scholarship.query.all()
-    return render_template('donor/browse.html', full_list=full_list)
+    paginated_list = Scholarship.query.filter(Scholarship.expiration_date > now()) \
+        .paginate(1, RESULTS_PER_PAGE, False)
+    return render_template('donor/browse.html', s_list=paginated_list, rpp=RESULTS_PER_PAGE)
 
 
 @donor.route('/profile/')

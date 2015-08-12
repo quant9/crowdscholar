@@ -1,5 +1,5 @@
-from flask import Blueprint, request, render_template, g, \
-                  flash, session, redirect, url_for
+from flask import Blueprint, request, render_template, \
+                  flash, redirect, url_for
 from flask.ext.login import login_user, logout_user, current_user
 from functools import wraps
 
@@ -9,6 +9,7 @@ from werkzeug import check_password_hash, generate_password_hash
 from app import db, login_manager
 from app.forms import LoginForm, RegisterForm
 from app.models import User, Student, Donor
+from app.oauth import OAuthSignIn
 from sqlalchemy.exc import IntegrityError
 
 home = Blueprint('home', __name__, 
@@ -30,7 +31,7 @@ def login_required(user_type=0):
 # necessary for flask login
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    return User.query.get(int(user_id))
 
 @login_manager.unauthorized_handler
 def unauthorized():
@@ -41,6 +42,33 @@ def unauthorized():
 @home.route('/index')
 def index():
     return render_template("home/index.html")
+
+@home.route('/authorize/<provider>')
+def oauth_authorize(provider):
+    if not current_user.is_anonymous():
+        return redirect(url_for('home.index'))
+    oauth = OAuthSignIn.get_provider(provider)
+    return oauth.authorize()
+
+@home.route('/callback/<provider>')
+def oauth_callback(provider):
+    if not current_user.is_anonymous():
+        return redirect(url_for('index'))
+    oauth = OAuthSignIn.get_provider(provider)
+    email, first_name, last_name = oauth.callback()
+    if email is None:
+        flash('Facebook authentication failed. Try again or register via email.')
+        return redirect(url_for('home.register'))
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        user = User(first_name=first_name, last_name=last_name,
+            email=email, password='password', user_type=1)
+        db.session.add(user)
+        student = Student(user_id=User.query.filter_by(email=email).first().id)
+        db.session.add(student)
+        db.session.commit()
+    login_user(user, remember=False)
+    return redirect(url_for('home.index'))
 
 @home.route('/login', methods=['GET', 'POST'])
 def login():

@@ -32,13 +32,13 @@
     </ul>
     <a href="{{ url_for('donor.browse') }}">Back to scholarships</a>
   {% else %}<p>Viewing all scholarships</p>
-    {% for scholarship in full_list %}
+    {% for scholarship in s_list.items %}
       <ul>
         <li>Scholarship: {{ scholarship.name }}</li>
         <li>Scholarship ID: {{ scholarship.scholarship_id }}</li>
         <li>Created by: {{ scholarship.get_creator().first_name }}</li>
         <li>Expires on: {{ scholarship.expiration_date }}</li>
-        <li>${{ scholarship.amount_funded }} funded out of ${{ scholarship.amount_target }}</li>
+        <li>${{ scholarship.amount_funded | round|int }} funded out of ${{ scholarship.amount_target | round|int }}</li>
         <li>{{ scholarship.slug }}</li>
         <li>Number of donors: {{ scholarship.get_num_donors() }}</li>
         <li><a href="{{ url_for('donor.browse', scholarship_id=scholarship.scholarship_id) }}">
@@ -47,6 +47,13 @@
           Donate to this scholarship</a></li>
       </ul>
     {% endfor %}
+    <p>Viewing scholarships {{ s_list.page }} - {{ minimum([s_list.page+rpp-1, s_list.total]) }} out of {{ s_list.total }}</p>
+    <p>{% if s_list.has_prev %}
+      <a href="{{ url_for('donor.browse', page_num=s_list.prev_num) }}">Previous page</a>
+    {% else %}Previous page{% endif %} | 
+    {% if s_list.has_next %}
+      <a href="{{ url_for('donor.browse', page_num=s_list.next_num) }}">Next page</a>
+    {% else %}Next page{% endif %}</p>
   {% endif %}
 
 {% endblock %}

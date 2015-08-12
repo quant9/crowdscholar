@@ -3,6 +3,8 @@
   {% from "macros.html" import show_messages, render_field %}
   <h1>Create an Account</h1>
   {{ show_messages() }}
+
+  <p>Students: <a href="{{ url_for('home.oauth_authorize', provider='facebook') }}">Login with Facebook</a></p>
   <form method="POST" action="/register" class="form">
     {{ form.hidden_tag() }}
     {{ render_field(form.user_type, class="radio button") }}

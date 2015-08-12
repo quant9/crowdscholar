@@ -17,6 +17,11 @@ login_manager.login_view = 'views.home'
 login_manager.login_message = u'You must be logged in to access Crowdscholar.'
 login_manager.init_app(app)
 
+def minimum(num_list):
+    return min(num_list)
+
+app.jinja_env.globals.update(minimum=minimum)
+
 # import views
 from .views.home import home
 from .views.student import student

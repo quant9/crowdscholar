@@ -1,8 +1,8 @@
+from hashlib import md5
 from app import db
 from app import constants
 from flask.ext.login import UserMixin
 import datetime
-from sqlalchemy import func
 
 # base models for other tables to inherit
 class User(db.Model, UserMixin):
@@ -20,6 +20,14 @@ class User(db.Model, UserMixin):
     is_student = db.relationship('Student', backref='users')
     is_donor = db.relationship('Donor', backref='users')
 
+    def get_avatar(self, size):
+        return 'http://www.gravatar.com/avatar/{}?d=mm&s={}'.format(
+            md5(self.email.encode('utf-8')).hexdigest(), size)
+
+    def upload_avatar(self):
+        api_url = 'https://secure.gravatar.com/xmlrpc?user={}'
+        return api_url
+
     def get_status(self):
         return constants.STATUS[self.status]
 
@@ -33,15 +41,15 @@ class Student(db.Model):
     __tablename__ = 'students'
     student_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    gender = db.Column(db.SmallInteger, nullable=False)
-    address = db.Column(db.String(300), nullable=False)
-    apt_no = db.Column(db.String(10), nullable=False)
-    city = db.Column(db.String(100), nullable=False)
-    state = db.Column(db.String(10), nullable=False)
-    zipcode = db.Column(db.Integer, nullable=False)
-    phone = db.Column(db.String(20), nullable=False)
-    hs_year = db.Column(db.SmallInteger(), nullable=False)
-    dob = db.Column(db.DateTime(), nullable=False)
+    gender = db.Column(db.SmallInteger, nullable=True)
+    address = db.Column(db.String(300), nullable=True)
+    apt_no = db.Column(db.String(10), nullable=True)
+    city = db.Column(db.String(100), nullable=True)
+    state = db.Column(db.String(10), nullable=True)
+    zipcode = db.Column(db.Integer, nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
+    hs_year = db.Column(db.SmallInteger(), nullable=True)
+    dob = db.Column(db.DateTime(), nullable=True)
 
     # "Federal guidelines mandate that we collect data on the legal sex of all applicants.
     # Please report the sex currently listed on your birth certificate. 

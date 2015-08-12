@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+  {% from "macros.html" import show_messages, render_field %}
+  <h1>Thank you for your donation.</h1>
+  {{ show_messages() }}
+  <p>Thank you! Your donation has been received. Please keep this page for your records. A confirmation email has also been sent to you.</p>
+  <ul>
+    <li>Scholarship: {{ scholarship.name }}</li>
+    <li>Donation amount: ${{ donation.amount | round|int }}</li>
+    <li>Scholarship OLD funded amount: ${{ (scholarship.amount_funded - donation.amount) | round|int }}</li>
+    <li>Scholarship NEW funded amount: ${{ scholarship.amount_funded | round|int }} out of ${{ scholarship.amount_target | round|int }}</li>
+  </ul>
+  <a href="{{ url_for('donor.browse') }}">Go back to scholarships</a>
+  <a href="{{ url_for('home.index') }}">Go back home</a>
+
+{% endblock %}

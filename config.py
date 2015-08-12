@@ -11,7 +11,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'crowdscholar.db
     '?check_same_thread=False')
 DATABASE_CONNECT_OPTIONS = {}
 
-THREADS_PER_PAGE = 2
+RESULTS_PER_PAGE = 10
 
 CSRF_ENABLED = True
 CSRF_SESSION_KEY = "secret"

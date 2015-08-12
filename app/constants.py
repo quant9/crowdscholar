@@ -95,7 +95,7 @@ STATES = [('Alabama', 'Alabama'),
 ('Virgin Islands', 'Virgin Islands'),
 ]
 
-#
+# scholarship categories
 CATEGORIES = [
 (0, 'General'),
 (1, 'Athletic'),
@@ -109,33 +109,17 @@ CATEGORIES = [
 (9, 'Essay & Other Competitions'),
 ]
 
+# scholarship affiliations
 AFFILIATIONS = [
 (0, 'General / None'),
 (1, 'Ethnic Group'),
-(2, 'Religious Group'),
-(3, 'Military / Veteran'),
-(4, 'Political Organization'),
-(5, 'Disabled & Special Needs'),
-(6, 'Employer Affiliation'),
-(7, 'Nonprofit Organization / Foundation'),
+(2, 'Gender (e.g., women, LGBT)'),
+(3, 'Religious Group'),
+(4, 'Military / Veteran'),
+(5, 'Political Affliliation'),
+(6, 'Disabled & Special Needs'),
+(7, 'Employer Affiliation'),
 (8, 'Interest / Hobby Group'),
 (9, 'Other Affiliation'),
 ]
-
-    undergrad_not_enrolled = BooleanField('High School graduate not enrolled in college')
-    undergrad_enrolled = BooleanField('Current college student')
-    postgrad_not_enrolled = BooleanField('Prospective graduate student')
-    postgrad_enrolled = BooleanField('Current graduate student')
-
-
-
-
-
-
-
-
-
-
-
-
 
