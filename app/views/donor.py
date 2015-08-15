@@ -2,10 +2,11 @@ import datetime
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask.ext.login import current_user
 from app import db, login_manager
-from app.forms import CreateScholarshipForm, DonationForm, DonorProfileForm
+from app.forms import CreateScholarshipForm, DonationForm, DonorProfileForm, FilterForm
 from app.models import User, Donor, Scholarship, Campaign, Donation
 from .home import login_required
 from config import RESULTS_PER_PAGE
+from sqlalchemy import and_, or_
 
 donor = Blueprint('donor', __name__, url_prefix='/donor',
     template_folder='templates/donor', static_folder='static')
@@ -14,8 +15,7 @@ donor = Blueprint('donor', __name__, url_prefix='/donor',
 def now():
     return datetime.datetime.now()
 
-@donor.route('/browse/')
-@donor.route('/browse/page=<int:page_num>')
+@donor.route('/browse', methods=['GET'])
 @donor.route('/browse/<int:scholarship_id>')
 @login_required(user_type=2)
 def browse(scholarship_id=None):
@@ -25,9 +25,27 @@ def browse(scholarship_id=None):
             return render_template('donor/browse.html', scholarship=scholarship)
         flash("The scholarship you requested is unavailable. \
             Browse all scholarships below.".format(scholarship_id))
-    paginated_list = Scholarship.query.filter(Scholarship.expiration_date > now()) \
-        .paginate(1, RESULTS_PER_PAGE, False)
-    return render_template('donor/browse.html', s_list=paginated_list, rpp=RESULTS_PER_PAGE)
+
+    page_num = int(request.args.get('page', 1))
+    form = FilterForm(request.form)
+    # search_term = form.search.data or request.args.get('search')
+    kwargs = {}
+    if request.args.getlist('category') and '0' not in request.args.getlist('category'):
+        kwargs['category'] = request.args.getlist('category')
+    if request.args.getlist('affiliation') and '0' not in request.args.getlist('affiliation'):
+        kwargs['affiliation'] = request.args.getlist('affiliation')
+    paginated_list = _get_paginated_list(page_num, **kwargs)
+
+    return render_template('donor/browse.html', form=form, s_list=paginated_list, rpp=RESULTS_PER_PAGE)
+
+def _get_paginated_list(page_num, **kwargs):
+    arg_query = []
+    for var_name, var_list in kwargs.items():
+        for var_value in var_list:
+            arg_query.append(getattr(Scholarship, var_name) == var_value)
+    base_query = Scholarship.query.filter(and_(Scholarship.expiration_date > now(), 
+        or_(*arg_query)))
+    return base_query.paginate(page_num, RESULTS_PER_PAGE, False)
 
 
 @donor.route('/profile/')
@@ -49,7 +67,7 @@ def profile(user_id=None, donor_id=None):
 def create(donor_id):
     form = CreateScholarshipForm(request.form)
     if form.validate_on_submit():
-        flash('scholarship was successfully created!')
+        flash('Your scholarship was successfully created!')
         return redirect(url_for('home.index'))
     return render_template('donor/create.html')
 

@@ -51,7 +51,7 @@ def oauth_authorize(provider):
     return oauth.authorize()
 
 @home.route('/callback/<provider>')
-def oauth_callback(provider):
+def oauth_callback(provider, user_type=1):
     if not current_user.is_anonymous():
         return redirect(url_for('index'))
     oauth = OAuthSignIn.get_provider(provider)
@@ -62,10 +62,14 @@ def oauth_callback(provider):
     user = User.query.filter_by(email=email).first()
     if not user:
         user = User(first_name=first_name, last_name=last_name,
-            email=email, password='password', user_type=1)
+            email=email, password='', user_type=1)
         db.session.add(user)
-        student = Student(user_id=User.query.filter_by(email=email).first().id)
-        db.session.add(student)
+        if user_type == 1:
+            student = Student(user_id=User.query.filter_by(email=email).first().id)
+            db.session.add(student)
+        if user_type == 2:
+            donor = Donor(user_id=User.query.filter_by(email=email).first().id)
+            db.session.add(donor)
         db.session.commit()
     login_user(user, remember=False)
     return redirect(url_for('home.index'))

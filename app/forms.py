@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, RadioField, \
-    SelectField, IntegerField
+    SelectField, IntegerField, SelectMultipleField
 # from wtforms fmport RecaptchaField
 
 from wtforms.validators import Required, InputRequired, Email, EqualTo, Length, Optional, Regexp
@@ -65,6 +65,11 @@ class DonationForm(Form):
     other_amount = IntegerField('Other amount: ($1 increments)', 
         [RequiredIf('amount', message=message)], default=0)
     message = TextAreaField('Send a message to the scholarship creator: (optional)', [Optional()])
+
+
+class FilterForm(Form):
+    category = SelectMultipleField('Select category', choices=constants.CATEGORIES, coerce=int)
+    affiliation = SelectMultipleField('Select affiliation', choices=constants.AFFILIATIONS, coerce=int)
 
 
 class CreateScholarshipForm(Form):

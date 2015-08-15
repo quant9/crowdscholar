@@ -2,7 +2,7 @@
 {% block title %}Crowdscholar: browsing scholarship
 {% endblock %}
 {% block content %}
-  {% from "macros.html" import show_messages %}
+  {% from "macros.html" import show_messages, render_field %}
   <h1>Browse Scholarships</h1>
   {{ show_messages() }}
   {% if scholarship %}
@@ -31,29 +31,45 @@
       <li>Save this scholarship</li>
     </ul>
     <a href="{{ url_for('donor.browse') }}">Back to scholarships</a>
-  {% else %}<p>Viewing all scholarships</p>
-    {% for scholarship in s_list.items %}
-      <ul>
-        <li>Scholarship: {{ scholarship.name }}</li>
-        <li>Scholarship ID: {{ scholarship.scholarship_id }}</li>
-        <li>Created by: {{ scholarship.get_creator().first_name }}</li>
-        <li>Expires on: {{ scholarship.expiration_date }}</li>
-        <li>${{ scholarship.amount_funded | round|int }} funded out of ${{ scholarship.amount_target | round|int }}</li>
-        <li>{{ scholarship.slug }}</li>
-        <li>Number of donors: {{ scholarship.get_num_donors() }}</li>
-        <li><a href="{{ url_for('donor.browse', scholarship_id=scholarship.scholarship_id) }}">
-          Go to scholarship page</a></li>
-        <li><a href="{{ url_for('donor.donate', scholarship_id=scholarship.scholarship_id) }}">
-          Donate to this scholarship</a></li>
-      </ul>
-    {% endfor %}
-    <p>Viewing scholarships {{ s_list.page }} - {{ minimum([s_list.page+rpp-1, s_list.total]) }} out of {{ s_list.total }}</p>
-    <p>{% if s_list.has_prev %}
-      <a href="{{ url_for('donor.browse', page_num=s_list.prev_num) }}">Previous page</a>
-    {% else %}Previous page{% endif %} | 
-    {% if s_list.has_next %}
-      <a href="{{ url_for('donor.browse', page_num=s_list.next_num) }}">Next page</a>
-    {% else %}Next page{% endif %}</p>
+
+
+  {% else %}
+    <div class="row">
+      <div class="col-lg-3">
+        <form method="GET" action="/donor/browse" class="form">
+        {{ render_field(form.category, class="form-control") }}
+        {{ render_field(form.affiliation, class="form-control") }}
+        <input type="submit" value="Filter Results" class="button green">
+        </form>
+        <a href="?">Clear filters</a>
+      </div>
+      <div class="col-lg-9">
+        <p>Viewing scholarships</p>
+        {% for scholarship in s_list.items %}
+          <ul>
+            <li>Scholarship: {{ scholarship.name }}</li>
+            <li>Scholarship ID: {{ scholarship.scholarship_id }}</li>
+            <li>Created by: {{ scholarship.get_creator().first_name }}</li>
+            <li>Expires on: {{ scholarship.expiration_date }}</li>
+            <li>${{ scholarship.amount_funded | round|int }} funded out of ${{ scholarship.amount_target | round|int }}</li>
+            <li>{{ scholarship.slug }}</li>
+            <li>Number of donors: {{ scholarship.get_num_donors() }}</li>
+            <li><a href="{{ url_for('donor.browse', scholarship_id=scholarship.scholarship_id) }}">
+              Go to scholarship page</a></li>
+            <li><a href="{{ url_for('donor.donate', scholarship_id=scholarship.scholarship_id) }}">
+              Donate to this scholarship</a></li>
+          </ul>
+        {% endfor %}
+        <p>Viewing scholarships {{ (s_list.page-1)*rpp+1 }} - {{ minimum([s_list.page*rpp, s_list.total]) }} out of {{ s_list.total }}</p>
+        <p>{% if s_list.has_prev %}
+          <a href="?page={{ s_list.prev_num }}">Previous page</a>
+        {% else %}Previous page{% endif %} | 
+        {% if s_list.has_next %}
+          <a href="?page={{ s_list.next_num }}">Next page</a>
+        {% else %}Next page{% endif %}</p>
+      </div>
+    </div>
+
   {% endif %}
 
 {% endblock %}

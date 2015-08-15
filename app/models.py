@@ -117,8 +117,9 @@ class Scholarship(db.Model):
     scholarship_id = db.Column(db.Integer, primary_key=True)
     creator_id = db.Column(db.Integer, db.ForeignKey('donors.donor_id'))
     name = db.Column(db.String(200), nullable=False)
-    category = db.Column(db.String(50), nullable=False)
-    affiliation = db.Column(db.String(50), nullable=False)
+    category = db.Column(db.Integer, nullable=False)
+    affiliation = db.Column(db.Integer, nullable=False)
+    #TODO think about this
     grade_9 = db.Column(db.Boolean, default=False)
     grade_10 = db.Column(db.Boolean, default=False)
     grade_11 = db.Column(db.Boolean, default=False)

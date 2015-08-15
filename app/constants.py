@@ -97,7 +97,7 @@ STATES = [('Alabama', 'Alabama'),
 
 # scholarship categories
 CATEGORIES = [
-(0, 'General'),
+(0, 'All / Uncategorized'),
 (1, 'Athletic'),
 (2, 'Community & Local'),
 (3, 'Academics (General)'),
@@ -111,7 +111,7 @@ CATEGORIES = [
 
 # scholarship affiliations
 AFFILIATIONS = [
-(0, 'General / None'),
+(0, 'All / Uncategorized'),
 (1, 'Ethnic Group'),
 (2, 'Gender (e.g., women, LGBT)'),
 (3, 'Religious Group'),
