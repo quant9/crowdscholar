@@ -74,8 +74,8 @@ class FilterForm(Form):
 
 class CreateScholarshipForm(Form):
     name = StringField('Scholarship name', [InputRequired(message=message)])
-    category = SelectField('Select category', choices=constants.CATEGORIES)
-    affiliation = SelectField('Select affiliation', choices=constants.AFFILIATIONS)
+    category = SelectField('Select category', choices=constants.CATEGORIES, coerce=int)
+    affiliation = SelectField('Select affiliation', choices=constants.AFFILIATIONS, coerce=int)
     grade_9 = BooleanField('9th')
     grade_10 = BooleanField('10th')
     grade_11 = BooleanField('11th')

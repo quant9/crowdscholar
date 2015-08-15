@@ -64,12 +64,19 @@ def profile(user_id=None, donor_id=None):
 
 @donor.route('/create', methods=['GET', 'POST'])
 @login_required(user_type=2)
-def create(donor_id):
+def create():
     form = CreateScholarshipForm(request.form)
     if form.validate_on_submit():
+        new_scholarship = Scholarship(name=form.name.data, category=form.category.data,
+            affiliation=form.affiliation.data, slug=form.slug.data, grade_9=form.grade_9.data,
+            grade_10=form.grade_9.data, grade_11=form.grade_9.data, grade_12=form.grade_9.data,
+            amount_target=form.amount_target.data, description=form.description.data,
+            creator_id=Donor.get_donor(user_id=current_user.id).donor_id)
+        db.session.add(new_scholarship)
+        db.session.commit()
         flash('Your scholarship was successfully created!')
         return redirect(url_for('home.index'))
-    return render_template('donor/create.html')
+    return render_template('donor/create.html', form=form)
 
 
 @donor.route('/donate/')
