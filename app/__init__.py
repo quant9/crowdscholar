@@ -2,6 +2,7 @@
 from flask import Flask, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
+import stripe
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config')
@@ -17,9 +18,9 @@ login_manager.login_view = 'views.home'
 login_manager.login_message = u'You must be logged in to access Crowdscholar.'
 login_manager.init_app(app)
 
+# helper function for certain templates
 def minimum(num_list):
     return min(num_list)
-
 app.jinja_env.globals.update(minimum=minimum)
 
 # import views
@@ -33,6 +34,8 @@ app.register_blueprint(home)
 app.register_blueprint(student)
 app.register_blueprint(donor)
 
+# Stripe
+stripe.api_key = app.config['STRIPE_CREDENTIALS']['secret_key']
 
 # Sample HTTP error handling
 @app.errorhandler(404)

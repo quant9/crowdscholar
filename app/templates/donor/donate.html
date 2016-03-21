@@ -4,6 +4,7 @@
   <h1>Donate to a Crowdscholar Scholarship</h1>
   {{ show_messages() }}
   <p>Donating to: {{ scholarship.name }}</p>
+
   <form method="POST" action="/donor/donate/{{ scholarship.scholarship_id }}" class="form">
     {{ form.hidden_tag() }}
     {{ render_field(form.amount, class="radio button", id="amount", onclick="check();") }}
@@ -11,6 +12,23 @@
     {{ render_field(form.message, class="input text") }}
     <input type="submit" value="Let's do this!" class="button green">
   </form>
+
+  {% if donation: %}
+    <form method="POST" action="/donor/success">
+      <input type="hidden" value="{{ donation.donation_id }}" name='donation_id'>
+      <article>
+        <label>
+          <span>Your donation amount: ${{ donation.amount }}</span>
+        </label>
+      </article>
+
+      <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+              data-email="{{ current_user.email }}"
+              data-key="{{ key }}"
+              data-description="Donation to scholarship {{ donation.id }}"
+              data-amount="{{ donation.amount * 100 }}"></script>
+    </form>
+  {% endif %}
 
   <a href="{{ url_for('donor.browse') }}">Back to Scholarships</a>
 

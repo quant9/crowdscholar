@@ -175,6 +175,10 @@ class Donation(db.Model):
     cleared = db.Column(db.Boolean, default=False)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
 
+    @classmethod
+    def get_donation(cls, d_id):
+        return Donation.query.filter_by(donation_id=d_id).first()
+
     def __repr__(self):
         return '<Donation %r>' % (self.donation_id)
 

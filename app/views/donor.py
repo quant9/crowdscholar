@@ -1,5 +1,5 @@
 import datetime
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 from flask.ext.login import current_user
 from app import db, login_manager
 from app.forms import CreateScholarshipForm, DonationForm, DonorProfileForm, FilterForm
@@ -7,6 +7,7 @@ from app.models import User, Donor, Scholarship, Campaign, Donation
 from .home import login_required
 from config import RESULTS_PER_PAGE
 from sqlalchemy import and_, or_
+import stripe
 
 donor = Blueprint('donor', __name__, url_prefix='/donor',
     template_folder='templates/donor', static_folder='static')
@@ -44,7 +45,7 @@ def _get_paginated_list(page_num, **kwargs):
         for var_value in var_list:
             arg_query.append(getattr(Scholarship, var_name) == var_value)
     base_query = Scholarship.query.filter(and_(Scholarship.expiration_date > now(), 
-        or_(*arg_query)))
+        Scholarship.status == 0, or_(*arg_query)))
     return base_query.paginate(page_num, RESULTS_PER_PAGE, False)
 
 
@@ -83,26 +84,54 @@ def create():
 @donor.route('/donate/<int:scholarship_id>', methods=['GET', 'POST'])
 @login_required(user_type=2)
 def donate(scholarship_id=None):
+
     scholarship = Scholarship.get_scholarship(scholarship_id)
     if not scholarship:
         flash('Error finding donation page. Please make sure the scholarship ID is correct.')
         return redirect(url_for('donor.browse'))
 
-    form = DonationForm(request.form)
+    form = DonationForm(request.form, obj=donor)
     if form.validate_on_submit():
         amount = form.amount.data or form.other_amount.data
         donation = Donation(donor_id=Donor.get_donor(user_id=current_user.id).donor_id, 
             scholarship_id=scholarship_id, message=form.message.data,
             amount=amount, cleared=False)
-        scholarship.amount_funded += donation.amount
-        if scholarship.amount_funded >= scholarship.amount_target:
-            scholarship.status = 1
         db.session.add(donation)
         db.session.commit()
-        flash('Thank you for your donation, {}!'.format(current_user.first_name))
-        return render_template('donor/success.html', scholarship=scholarship, donation=donation)
+        form.populate_obj(donor)
+        return render_template('donor/donate.html', scholarship=scholarship, donation=donation,
+            key=current_app.config['STRIPE_CREDENTIALS']['publishable_key'], form=form)
 
     return render_template('donor/donate.html', form=form, scholarship=scholarship)
+
+
+@donor.route('/success', methods=['POST'])
+@login_required(user_type=2)
+def success():
+    donation_id = request.form.get('donation_id')
+    if not donation_id:
+        flash('There was an error - redirecting you to homepage')
+        return redirect(url_for('home.index'))
+    donation = Donation.get_donation(donation_id)
+    scholarship = Scholarship.get_scholarship(donation.scholarship_id)
+    amount = int(donation.amount * 100)
+    customer = stripe.Customer.create(
+        email=current_user.email,
+        card=request.form['stripeToken']
+    )
+    charge = stripe.Charge.create(
+        customer=customer.id,
+        amount=amount,
+        currency='usd',
+        description='Crowdscholar donation'
+    )
+    scholarship.amount_funded += donation.amount
+    if scholarship.amount_funded >= scholarship.amount_target:
+        scholarship.status = 1
+    donation.cleared = True
+    db.session.commit()
+    flash('Thank you for your donation, {}!'.format(current_user.first_name))
+    return render_template('donor/success.html', scholarship=scholarship, donation=donation)
 
 
 @donor.route('/update', methods=['GET', 'POST'])
